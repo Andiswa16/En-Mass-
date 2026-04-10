@@ -1,0 +1,52 @@
+﻿@model EnMasse.Models.Delivery
+@{
+    ViewData["Title"] = "Request Delivery";
+    Layout = "_Layout";
+}
+
+<div style="display:flex; justify-content:center; align-items:center; min-height:100vh; background:#f0f0f0; position:relative; overflow:hidden;">
+    <div style="position:absolute; inset:0; opacity:0.06; font-size:60px; display:flex; flex-wrap:wrap; gap:40px; padding:20px; pointer-events:none; overflow:hidden;">
+        @for (int i = 0; i < 30; i++)
+        {
+            <span>&#128666;</span>
+        }
+    </div>
+
+    <div style="background:white; padding:40px 50px; border-radius:12px; width:100%; max-width:520px; text-align:center; position:relative; z-index:1;">
+        <h1 style="font-size:26px; font-weight:900; margin-bottom:20px;">
+            EN MASSE'<span style="color:#e05a2b;">LOGISTICS</span>
+        </h1>
+        <h2 style="font-size:16px; font-weight:700; margin-bottom:20px;">Delivery Information:</h2>
+
+        <form method="post" asp-action="RequestDelivery" asp-controller="Customer">
+            <input asp-for="PickupAddress" placeholder="Pickup Address"
+                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:12px; box-sizing:border-box; outline:none;" />
+
+            <input asp-for="DeliveryAddress" placeholder="Delivery Address"
+                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:12px; box-sizing:border-box; outline:none;" />
+
+            <input asp-for="DescriptionOfGoods" placeholder="Description of Goods"
+                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:12px; box-sizing:border-box; outline:none;" />
+
+            <input asp-for="Weight" placeholder="Weight"
+                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:12px; box-sizing:border-box; outline:none;" />
+
+            <input asp-for="DeliveryDate" type="date"
+                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:12px; box-sizing:border-box; outline:none;" />
+
+            <input asp-for="SpecialInstructions" placeholder="Special Instructions"
+                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:20px; box-sizing:border-box; outline:none;" />
+
+            <div style="display:flex; gap:16px;">
+                <a asp-action="Index" asp-controller="Customer"
+                       style="flex:1; padding:14px; border-radius:30px; border:1px solid #333; background:white; font-size:15px; font-weight:600; text-align:center; text-decoration:none; color:#333;">
+                    Cancel
+                </a>
+                <button type="submit"
+                        style="flex:1; padding:14px; border-radius:30px; border:none; background:#e05a2b; color:white; font-size:15px; font-weight:700; cursor:pointer;">
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

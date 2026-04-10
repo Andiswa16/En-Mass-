@@ -1,0 +1,85 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var role = HttpContextAccessor.HttpContext?.Session.GetString("Role");
+    var username = HttpContextAccessor.HttpContext?.Session.GetString("Username");
+    var isLoggedIn = role != null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - EnMasse</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body style="margin:0; padding:0; background:#f0f0f0;">
+
+    @if (isLoggedIn)
+    {
+        <div style="display:flex; min-height:100vh;">
+            <!-- SIDEBAR -->
+            <nav style="width:220px; background:#1a1a1a; color:white; display:flex; flex-direction:column; padding:20px 0; position:fixed; height:100vh; z-index:100;">
+                <div style="padding:0 20px 10px; display:flex; align-items:center; gap:10px;">
+                    <span style="color:#e05a2b; font-size:28px;">&#9711;</span>
+                </div>
+                <div style="padding:0 20px 30px;">
+                    <p style="color:white; font-weight:700; font-size:15px; margin:0;">Customer</p>
+                    <p style="color:white; font-weight:700; font-size:15px; margin:0;">Dashboard</p>
+                </div>
+
+                <a asp-controller="Customer" asp-action="Index"
+                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
+                    <span style="color:#e05a2b;">&#9776;</span> Dashboard
+                </a>
+                <a asp-controller="Customer" asp-action="RequestDelivery"
+                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
+                    <span style="color:#e05a2b;">&#128666;</span> Request Delivery
+                </a>
+                <a asp-controller="Customer" asp-action="DeliveryStatus"
+                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
+                    <span style="color:#e05a2b;">&#128204;</span> Delivery Status
+                </a>
+                <a asp-controller="Customer" asp-action="Report"
+                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
+                    <span style="color:#e05a2b;">&#128196;</span> Report
+                </a>
+                <a asp-controller="Customer" asp-action="LogTicket"
+                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
+                    <span style="color:#e05a2b;">&#128100;</span> Log a ticket
+                </a>
+
+                <div style="flex:1;"></div>
+
+                <a asp-controller="Home" asp-action="Help"
+                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
+                    <span style="color:#e05a2b;">?</span> Help
+                </a>
+                <a asp-controller="Home" asp-action="Settings"
+                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
+                    <span style="color:#e05a2b;">&#9881;</span> Settings
+                </a>
+                <a asp-controller="Auth" asp-action="Logout"
+                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
+                    <span style="color:#e05a2b;">&#10148;</span> Log out
+                </a>
+            </nav>
+
+            <!-- MAIN CONTENT -->
+            <div style="margin-left:220px; flex:1; padding:30px;">
+                @RenderBody()
+            </div>
+        </div>
+    }
+    else
+    {
+        @RenderBody()
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

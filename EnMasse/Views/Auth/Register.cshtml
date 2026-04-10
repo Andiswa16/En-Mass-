@@ -1,0 +1,96 @@
+﻿@model EnMasse.Models.Registration
+@{
+    ViewData["Title"] = "Register";
+    Layout = "_Layout";
+}
+
+<div style="display:flex; justify-content:center; align-items:center; min-height:100vh; background:#f0f0f0; position:relative; overflow:hidden;">
+
+    <div style="position:absolute; inset:0; opacity:0.06; font-size:60px; display:flex; flex-wrap:wrap; gap:40px; padding:20px; pointer-events:none; overflow:hidden;">
+        @for (int i = 0; i < 30; i++)
+        {
+            <span>&#128666;</span>
+        }
+    </div>
+
+    <div style="background:white; padding:40px 50px; border-radius:12px; width:100%; max-width:520px; text-align:center; position:relative; z-index:1;">
+
+        <h1 style="font-size:26px; font-weight:900; margin-bottom:20px;">
+            EN MASSE'<span style="color:#e05a2b;">LOGISTICS</span>
+        </h1>
+        <h2 style="font-size:18px; font-weight:700; margin-bottom:4px;">Welcome</h2>
+        <p style="color:#666; margin-bottom:20px;">Please register your company</p>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div style="background:#f8d7da; color:#721c24; padding:12px; border-radius:8px; margin-bottom:16px; font-size:13px;">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p style="margin:2px 0;">@error.ErrorMessage</p>
+                }
+            </div>
+        }
+
+        <form method="post" asp-action="Register" asp-controller="Auth" id="regForm">
+
+            <input asp-for="CompanyName" id="companyNameField" placeholder="Registered Company Name"
+                   oninput="document.getElementById('usernamePreview').innerText = this.value || 'Your company name'"
+                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:4px; box-sizing:border-box; outline:none;" />
+            <p style="font-size:12px; color:#888; margin-bottom:12px;">
+                Your username will be: <strong id="usernamePreview">Your company name</strong>
+            </p>
+
+            <input asp-for="VATNumber" placeholder="VAT Number (10 digits)" maxlength="10"
+                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:4px; box-sizing:border-box; outline:none;" />
+            <span asp-validation-for="VATNumber" style="color:red; font-size:12px; display:block; margin-bottom:8px;"></span>
+
+            <input asp-for="CompanyAddress" placeholder="Company Address"
+                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:12px; box-sizing:border-box; outline:none;" />
+
+            <input asp-for="ContactName" placeholder="Name of CEO / Director / Relevant Person"
+                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:12px; box-sizing:border-box; outline:none;" />
+
+            <input asp-for="ContactPhone" placeholder="Phone Number (10 digits)" maxlength="10"
+                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:4px; box-sizing:border-box; outline:none;" />
+            <span asp-validation-for="ContactPhone" style="color:red; font-size:12px; display:block; margin-bottom:8px;"></span>
+
+            <input asp-for="ContactEmail" placeholder="Email"
+                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:12px; box-sizing:border-box; outline:none;" />
+
+            <input type="password" name="Password" id="passwordField"
+                   placeholder="Password (8+ chars, letters, numbers &amp; symbols)"
+                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:4px; box-sizing:border-box; outline:none;" />
+            <p id="pwError" style="color:red; font-size:12px; margin-bottom:12px; display:none;">
+                Password must be at least 8 characters and include a letter, a number, and a symbol.
+            </p>
+
+            <div style="display:flex; gap:16px; margin-top:10px;">
+                <a asp-controller="Auth" asp-action="Login"
+                       style="flex:1; padding:14px; border-radius:30px; border:1px solid #333; background:white; font-size:15px; font-weight:600; text-align:center; text-decoration:none; color:#333;">
+                    Cancel
+                </a>
+                <button type="submit" onclick="return validateForm()"
+                        style="flex:1; padding:14px; border-radius:30px; border:none; background:#e05a2b; color:white; font-size:15px; font-weight:700; cursor:pointer;">
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function validateForm() {
+        var pw = document.getElementById('passwordField').value;
+        var valid = pw.length >= 8
+            && /[a-zA-Z]/.test(pw)
+            && /[0-9]/.test(pw)
+            && /[^a-zA-Z0-9]/.test(pw);
+
+        if (!valid) {
+            document.getElementById('pwError').style.display = 'block';
+            return false;
+        }
+        document.getElementById('pwError').style.display = 'none';
+        return true;
+    }
+</script>
