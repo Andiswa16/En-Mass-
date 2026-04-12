@@ -1,19 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
-namespace EnMasse.Models;
-public class User
+
+namespace EnMasse.Models
 {
-    [Key]
-    public int UserID { get; set; }
+    public class User
+    {
+        [Key]
+        public int UserID { get; set; }
 
-    [Required]
-    public string Username { get; set; }
+        [Required]
+        public string Username { get; set; }
 
-    [Required]
-    public string Password { get; set; }
+        [Required]
+        public string Password { get; set; }
 
-    public string Role { get; set; } // Customer, Driver, Admin, Manager
+        public string Role { get; set; } = "Customer";
 
-    // FK
-    public int RegistrationID { get; set; }
-    public virtual Registration Registration { get; set; }
+        public int? RegistrationID { get; set; }
+
+        public virtual Registration? Registration { get; set; }
+    }
 }

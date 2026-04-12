@@ -15,21 +15,31 @@ namespace EnMasse.Controllers
             db = context;
         }
 
-        // LOGIN FIRST
+        public IActionResult Index()
+        {
+            if (HttpContext.Session.GetString("UserID") != null)
+                return RedirectToAction("Index", "Customer");
+            return RedirectToAction("Login");
+        }
+
+        // ✅ LOGIN GET
         public IActionResult Login()
         {
-            // If already logged in → go to dashboard
             if (HttpContext.Session.GetString("UserID") != null)
-            {
                 return RedirectToAction("Index", "Customer");
-            }
-
             return View();
         }
 
+        // ✅ LOGIN POST
         [HttpPost]
         public IActionResult Login(string username, string password)
         {
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            {
+                ViewBag.Error = "Please enter both username and password.";
+                return View();
+            }
+
             var user = db.Users.FirstOrDefault(u =>
                 u.Username == username && u.Password == password);
 
@@ -38,7 +48,6 @@ namespace EnMasse.Controllers
                 HttpContext.Session.SetString("UserID", user.UserID.ToString());
                 HttpContext.Session.SetString("Role", user.Role);
                 HttpContext.Session.SetString("Username", user.Username);
-
                 return RedirectToAction("Index", "Customer");
             }
 
@@ -46,16 +55,18 @@ namespace EnMasse.Controllers
             return View();
         }
 
-        // REGISTER (only accessed manually)
+        // ✅ REGISTER GET
         public IActionResult Register()
         {
+            if (HttpContext.Session.GetString("UserID") != null)
+                return RedirectToAction("Index", "Customer");
             return View();
         }
 
+        // ✅ REGISTER POST
         [HttpPost]
         public IActionResult Register(Registration reg, string Password)
         {
-            // 🔒 PASSWORD VALIDATION
             if (string.IsNullOrEmpty(Password) ||
                 Password.Length < 8 ||
                 !Regex.IsMatch(Password, @"[a-zA-Z]") ||
@@ -89,17 +100,18 @@ namespace EnMasse.Controllers
                 db.Users.Add(user);
                 db.SaveChanges();
 
-                // ✅ AUTO LOGIN AFTER REGISTER
                 HttpContext.Session.SetString("UserID", user.UserID.ToString());
                 HttpContext.Session.SetString("Role", user.Role);
                 HttpContext.Session.SetString("Username", user.Username);
 
+                TempData["Success"] = "Registration successful! Welcome, " + username + ".";
                 return RedirectToAction("Index", "Customer");
             }
 
             return View(reg);
         }
 
+        // ✅ LOGOUT
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

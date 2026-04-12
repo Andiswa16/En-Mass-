@@ -25,7 +25,7 @@ namespace EnMasse.Controllers
             return userId != null ? int.Parse(userId) : 0;
         }
 
-        // DASHBOARD
+        // ✅ DASHBOARD
         public IActionResult Index()
         {
             if (!IsLoggedIn()) return RedirectToAction("Login", "Auth");
@@ -38,14 +38,14 @@ namespace EnMasse.Controllers
             return View(deliveries);
         }
 
-        // REQUEST DELIVERY - GET
+        // ✅ REQUEST DELIVERY GET
         public IActionResult RequestDelivery()
         {
             if (!IsLoggedIn()) return RedirectToAction("Login", "Auth");
             return View();
         }
 
-        // REQUEST DELIVERY - POST
+        // ✅ REQUEST DELIVERY POST
         [HttpPost]
         public IActionResult RequestDelivery(Delivery delivery)
         {
@@ -66,13 +66,14 @@ namespace EnMasse.Controllers
             return View(delivery);
         }
 
-        // DELIVERY STATUS
+        // ✅ DELIVERY STATUS
         public IActionResult DeliveryStatus()
         {
             if (!IsLoggedIn()) return RedirectToAction("Login", "Auth");
 
             var deliveries = db.Deliveries
                 .Where(d => d.UserID == GetUserID())
+                .OrderByDescending(d => d.CreatedDate)
                 .ToList();
 
             return View(deliveries);

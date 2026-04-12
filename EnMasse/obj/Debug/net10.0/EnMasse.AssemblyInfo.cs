@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EnMasse")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ef21deabe55832b59463e8ea7acedef1f46a2bf2")]
 [assembly: System.Reflection.AssemblyProductAttribute("EnMasse")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EnMasse")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -3,7 +3,7 @@
 @{
     var role = HttpContextAccessor.HttpContext?.Session.GetString("Role");
     var username = HttpContextAccessor.HttpContext?.Session.GetString("Username");
-    var isLoggedIn = role != null;
+    var isLoggedIn = !string.IsNullOrEmpty(role);
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -19,8 +19,8 @@
     @if (isLoggedIn)
     {
         <div style="display:flex; min-height:100vh;">
-            <!-- SIDEBAR -->
             <nav style="width:220px; background:#1a1a1a; color:white; display:flex; flex-direction:column; padding:20px 0; position:fixed; height:100vh; z-index:100;">
+
                 <div style="padding:0 20px 10px; display:flex; align-items:center; gap:10px;">
                     <span style="color:#e05a2b; font-size:28px;">&#9711;</span>
                 </div>
@@ -41,32 +41,15 @@
                        style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
                     <span style="color:#e05a2b;">&#128204;</span> Delivery Status
                 </a>
-                <a asp-controller="Customer" asp-action="Report"
-                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
-                    <span style="color:#e05a2b;">&#128196;</span> Report
-                </a>
-                <a asp-controller="Customer" asp-action="LogTicket"
-                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
-                    <span style="color:#e05a2b;">&#128100;</span> Log a ticket
-                </a>
 
                 <div style="flex:1;"></div>
 
-                <a asp-controller="Home" asp-action="Help"
-                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
-                    <span style="color:#e05a2b;">?</span> Help
-                </a>
-                <a asp-controller="Home" asp-action="Settings"
-                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
-                    <span style="color:#e05a2b;">&#9881;</span> Settings
-                </a>
                 <a asp-controller="Auth" asp-action="Logout"
                        style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
                     <span style="color:#e05a2b;">&#10148;</span> Log out
                 </a>
             </nav>
 
-            <!-- MAIN CONTENT -->
             <div style="margin-left:220px; flex:1; padding:30px;">
                 @RenderBody()
             </div>

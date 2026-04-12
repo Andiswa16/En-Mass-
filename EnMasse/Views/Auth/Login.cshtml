@@ -3,8 +3,16 @@
     Layout = "_Layout";
 }
 
-<div style="display:flex; justify-content:center; align-items:center; min-height:100vh; background:#f0f0f0;">
-    <div style="background:white; padding:50px 60px; border-radius:12px; width:100%; max-width:520px; text-align:center;">
+<div style="display:flex; justify-content:center; align-items:center; min-height:100vh; background:#f0f0f0; position:relative; overflow:hidden;">
+
+    <div style="position:absolute; inset:0; opacity:0.06; font-size:60px; display:flex; flex-wrap:wrap; gap:40px; padding:20px; pointer-events:none; overflow:hidden;">
+        @for (int i = 0; i < 30; i++)
+        {
+            <span>&#128666;</span>
+        }
+    </div>
+
+    <div style="background:white; padding:50px 60px; border-radius:12px; width:100%; max-width:520px; text-align:center; position:relative; z-index:1;">
 
         <h1 style="font-size:28px; font-weight:900; margin-bottom:24px;">
             EN MASSE'<span style="color:#e05a2b;">LOGISTICS</span>
@@ -14,19 +22,20 @@
 
         @if (TempData["Success"] != null)
         {
-            <div style="background:#d4edda; color:#155724; padding:12px; border-radius:8px; margin-bottom:16px;">
+            <div style="background:#d4edda; color:#155724; padding:12px; border-radius:8px; margin-bottom:16px; font-size:13px;">
                 @TempData["Success"]
             </div>
         }
 
         @if (ViewBag.Error != null)
         {
-            <div style="background:#f8d7da; color:#721c24; padding:12px; border-radius:8px; margin-bottom:16px;">
+            <div style="background:#f8d7da; color:#721c24; padding:12px; border-radius:8px; margin-bottom:16px; font-size:13px;">
                 @ViewBag.Error
             </div>
         }
 
         <form method="post" asp-action="Login" asp-controller="Auth">
+
             <input type="text" name="username" placeholder="Please enter your username"
                    style="width:100%; padding:14px 20px; border-radius:30px; border:none; background:#e05a2b; color:white; font-size:15px; margin-bottom:14px; outline:none; box-sizing:border-box;" />
 
@@ -41,6 +50,7 @@
                     style="width:100%; padding:14px; border-radius:30px; border:2px solid #333; background:transparent; font-size:15px; font-weight:700; cursor:pointer; margin-bottom:16px;">
                 Login
             </button>
+
         </form>
 
         <p style="color:#666; font-size:14px; margin-bottom:8px;">Don't have an account?</p>
@@ -60,5 +70,6 @@
             <a href="#"><img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" style="width:40px; height:40px;" /></a>
             <a href="#" style="font-size:28px; text-decoration:none; color:#555;">&#63743;</a>
         </div>
+
     </div>
 </div>

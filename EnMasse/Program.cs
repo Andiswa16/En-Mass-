@@ -12,12 +12,12 @@ namespace EnMasse
             builder.Services.AddControllersWithViews();
             builder.Services.AddHttpContextAccessor();
 
-            // Database
+            // ✅ SIMPLIFIED - no retry, just plain connection
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
-                    builder.Configuration.GetConnectionString("DefaultConnection")));
+                    builder.Configuration.GetConnectionString("DefaultConnection")
+                ));
 
-            // Session
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
             {
@@ -36,16 +36,13 @@ namespace EnMasse
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
-
-            app.UseSession(); // ✅ MUST be here
-
+            app.UseSession();
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}"); // ✅ DEFAULT ROUTE
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }

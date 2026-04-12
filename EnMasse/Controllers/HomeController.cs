@@ -9,14 +9,9 @@ namespace EnMasse.Controllers
     {
         public IActionResult Index()
         {
-            // ✅ ALWAYS go to LOGIN first if not logged in
-            if (HttpContext.Session.GetString("UserID") == null)
-            {
-                return RedirectToAction("Login", "Auth");
-            }
-
-            // ✅ If already logged in → dashboard
-            return RedirectToAction("Index", "Customer");
+            if (HttpContext.Session.GetString("UserID") != null)
+                return RedirectToAction("Index", "Customer");
+            return View();
         }
 
         public IActionResult Privacy()
@@ -27,7 +22,10 @@ namespace EnMasse.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            });
         }
     }
 }

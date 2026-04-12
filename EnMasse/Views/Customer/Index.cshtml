@@ -1,7 +1,10 @@
 ﻿@model List<EnMasse.Models.Delivery>
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
 @{
     ViewData["Title"] = "Customer Dashboard";
     Layout = "_Layout";
+    var username = HttpContextAccessor.HttpContext?.Session.GetString("Username");
 }
 
 <div style="padding:20px;">
@@ -15,18 +18,22 @@
             </div>
             <div style="background:white; border-radius:30px; border:1px solid #333; padding:10px 20px; display:flex; align-items:center; gap:8px; min-width:280px;">
                 <span>&#128269;</span>
-                <input type="text" placeholder="Search for a delivery" style="border:none; outline:none; font-size:14px; width:100%;" />
+                <input type="text" id="searchInput" placeholder="Search for a delivery"
+                       onkeyup="filterTable()"
+                       style="border:none; outline:none; font-size:14px; width:100%;" />
             </div>
         </div>
         <div style="background:white; border-radius:30px; border:1px solid #ddd; padding:10px 20px; display:flex; align-items:center; gap:10px;">
             <span style="font-size:24px;">&#128100;</span>
-            <span style="font-weight:600;">@HttpContext.Session.GetString("Username")</span>
+            <span style="font-weight:600;">@username</span>
         </div>
     </div>
 
     @if (TempData["Success"] != null)
     {
-        <div style="background:#d4edda; color:#155724; padding:12px; border-radius:8px; margin-bottom:16px;">@TempData["Success"]</div>
+        <div style="background:#d4edda; color:#155724; padding:12px; border-radius:8px; margin-bottom:16px;">
+            @TempData["Success"]
+        </div>
     }
 
     <!-- Cards row -->
@@ -36,25 +43,42 @@
         @if (Model.Any())
         {
             var latest = Model.First();
-            <div style="flex:1.5; background:#888; color:white; border-radius:16px; padding:24px; position:relative; overflow:hidden;">
-                <span style="font-size:80px; position:absolute; right:-10px; bottom:-20px; opacity:0.15;">&#128666;</span>
-                <p style="margin:0 0 8px; font-weight:600;">Delivery ID: #DR@latest.DeliveryID</p>
-                <span style="background:white; color:#333; border-radius:30px; padding:4px 14px; font-size:13px; font-weight:600; float:right; margin-top:-28px;">@latest.Status</span>
-                <div style="margin-top:16px;">
-                    <p style="margin:6px 0; font-size:14px;">@latest.CreatedDate.ToString("d/M/yy") &nbsp; Checking</p>
-                    <p style="margin:6px 0; font-size:14px;">@latest.DeliveryDate.ToString("d/M/yy") &nbsp; @latest.Status</p>
+            <div style="flex:1.5; background:#888; color:white; border-radius:16px; padding:24px; position:relative; overflow:hidden; min-height:180px;">
+                <span style="font-size:120px; position:absolute; right:-20px; bottom:-30px; opacity:0.12;">&#128666;</span>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <p style="margin:0 0 16px; font-weight:700; font-size:15px;">Delivery ID: #DR@latest.DeliveryID</p>
+                    <span style="background:white; color:#333; border-radius:30px; padding:4px 14px; font-size:13px; font-weight:600;">
+                        @latest.Status
+                    </span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span style="font-size:13px; min-width:60px;">@latest.CreatedDate.ToString("d/M/yy")</span>
+                        <div style="width:10px; height:10px; background:white; border-radius:50%;"></div>
+                        <span style="font-size:13px;">Checking</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span style="font-size:13px; min-width:60px;">@latest.DeliveryDate.ToString("d/M/yy")</span>
+                        <div style="width:10px; height:10px; background:#e05a2b; border-radius:50%;"></div>
+                        <span style="font-size:13px;">@latest.Status</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <span style="font-size:13px; min-width:60px;">--</span>
+                        <div style="width:10px; height:10px; background:rgba(255,255,255,0.3); border-radius:50%;"></div>
+                        <span style="font-size:13px; color:rgba(255,255,255,0.5);">--</span>
+                    </div>
                 </div>
             </div>
         }
         else
         {
             <div style="flex:1.5; background:#888; color:white; border-radius:16px; padding:24px;">
-                <p>No deliveries yet.</p>
+                <p style="margin:0 0 12px;">No deliveries yet.</p>
                 <a asp-action="RequestDelivery" style="color:white; font-weight:700;">Request your first delivery →</a>
             </div>
         }
 
-        <!-- Donut chart card -->
+        <!-- Donut chart -->
         <div style="flex:1; background:white; border-radius:16px; padding:24px; text-align:center; border:1px solid #eee;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
                 <span style="width:10px; height:10px; background:#e05a2b; border-radius:50%; display:inline-block;"></span>
@@ -67,9 +91,9 @@
                 int dash = (int)(pct * 2.51);
                 int gap = 251 - dash;
             }
-            <svg viewBox="0 0 100 100" width="120" height="120">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#f0f0f0" stroke-width="12" />
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#e05a2b" stroke-width="12"
+            <svg viewBox="0 0 100 100" width="150" height="150">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#f0f0f0" stroke-width="10" />
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#e05a2b" stroke-width="10"
                         stroke-dasharray="@dash @gap" stroke-linecap="round"
                         transform="rotate(-90 50 50)" />
                 <text x="50" y="47" text-anchor="middle" font-size="14" font-weight="700">@pct%</text>
@@ -80,7 +104,7 @@
 
     <!-- Deliveries table -->
     <div style="background:white; border-radius:16px; padding:24px; border:1px solid #eee;">
-        <table style="width:100%; border-collapse:collapse; font-size:14px;">
+        <table style="width:100%; border-collapse:collapse; font-size:14px;" id="deliveryTable">
             <thead>
                 <tr style="border-bottom:2px solid #f0f0f0;">
                     <th style="text-align:left; padding:10px;">Delivery ID</th>
@@ -98,14 +122,37 @@
                         <td style="padding:12px 10px;">@d.DeliveryDate.ToString("d/M/yy")</td>
                         <td style="padding:12px 10px;">@d.PickupAddress – @d.DeliveryAddress</td>
                         <td style="padding:12px 10px;">@d.Weight</td>
-                        <td style="padding:12px 10px; font-weight:700;">@d.Status</td>
+                        <td style="padding:12px 10px; font-weight:700;">
+                            @{
+                                var statusColor = d.Status switch
+                                {
+                                    "Delivered" => "#155724",
+                                    "In Transit" => "#856404",
+                                    "Pending" => "#666",
+                                    _ => "#333"
+                                };
+                            }
+                            <span style="color:@statusColor;">@d.Status</span>
+                        </td>
                     </tr>
                 }
                 @if (!Model.Any())
                 {
-                    <tr><td colspan="5" style="padding:20px; text-align:center; color:#999;">No deliveries found.</td></tr>
+                    <tr>
+                        <td colspan="5" style="padding:20px; text-align:center; color:#999;">No deliveries found.</td>
+                    </tr>
                 }
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+    function filterTable() {
+        var input = document.getElementById("searchInput").value.toLowerCase();
+        var rows = document.querySelectorAll("#deliveryTable tbody tr");
+        rows.forEach(function (row) {
+            row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
+        });
+    }
+</script>
