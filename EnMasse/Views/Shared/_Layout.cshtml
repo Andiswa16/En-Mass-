@@ -10,59 +10,91 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - EnMasse</title>
+    <title>@ViewData["Title"] - En Massé Logistics</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body style="margin:0; padding:0; background:#f0f0f0;">
+<body style="margin:0; padding:0; background: var(--bg-dark);">
 
-    @if (isLoggedIn)
+    @if (isLoggedIn && role == "Customer")
     {
         <div style="display:flex; min-height:100vh;">
             <nav style="width:220px; background:#1a1a1a; color:white; display:flex; flex-direction:column; padding:20px 0; position:fixed; height:100vh; z-index:100;">
 
                 <div style="padding:0 20px 10px; display:flex; align-items:center; gap:10px;">
-                    <span style="color:#e05a2b; font-size:28px;">&#9711;</span>
+                    <img src="~/images/logo.png" alt="En Massé Logo" style="height: 35px;">
+                    </div>
+                    <div style="padding:0 20px 30px;">
+                        <p style="color:white; font-weight:700; font-size:15px; margin:0;">@role</p>
+                        <p style="color:white; font-weight:700; font-size:15px; margin:0;">Dashboard</p>
+                    </div>
+
+                    <a asp-controller="Customer" asp-action="Index"
+                           style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
+                        <span style="color:#e05a2b;">&#9776;</span> Dashboard
+                    </a>
+                    <a asp-controller="Customer" asp-action="RequestDelivery"
+                           style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
+                        <span style="color:#e05a2b;">&#128666;</span> Request Delivery
+                    </a>
+                    <a asp-controller="Customer" asp-action="DeliveryStatus"
+                           style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
+                        <span style="color:#e05a2b;">&#128204;</span> Delivery Status
+                    </a>
+
+                    <div style="flex:1;"></div>
+
+                    <a asp-controller="Auth" asp-action="Logout"
+                           style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
+                        <span style="color:#e05a2b;">&#10148;</span> Log out
+                    </a>
+                </nav>
+
+                <div style="margin-left:220px; flex:1; padding:30px; background-color: #e0e0e0; color: #000;">
+                    @RenderBody()
                 </div>
-                <div style="padding:0 20px 30px;">
-                    <p style="color:white; font-weight:700; font-size:15px; margin:0;">Customer</p>
-                    <p style="color:white; font-weight:700; font-size:15px; margin:0;">Dashboard</p>
-                </div>
-
-                <a asp-controller="Customer" asp-action="Index"
-                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
-                    <span style="color:#e05a2b;">&#9776;</span> Dashboard
-                </a>
-                <a asp-controller="Customer" asp-action="RequestDelivery"
-                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
-                    <span style="color:#e05a2b;">&#128666;</span> Request Delivery
-                </a>
-                <a asp-controller="Customer" asp-action="DeliveryStatus"
-                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
-                    <span style="color:#e05a2b;">&#128204;</span> Delivery Status
-                </a>
-
-                <div style="flex:1;"></div>
-
-                <a asp-controller="Auth" asp-action="Logout"
-                       style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
-                    <span style="color:#e05a2b;">&#10148;</span> Log out
-                </a>
-            </nav>
-
-            <div style="margin-left:220px; flex:1; padding:30px;">
-                @RenderBody()
             </div>
-        </div>
-    }
+        }
     else
-    {
-        @RenderBody()
-    }
+        {
+            <header>
+                <nav class="navbar">
+                    <div class="logo">
+                        <img src="~/images/logo.png" alt="En Massé Logo">
+                            <span style="font-size: 1.2rem; font-weight: bold; color: var(--text-light);">En Massé Logistics</span>
+                        </div>
+                        <div class="nav-links">
+                            <a href="@Url.Action("Index", "Home")">Home</a>
+                            <a href="@Url.Action("About", "Home")">About us</a>
+                            <a href="#">Services</a>
+                    
+                            @if (isLoggedIn)
+                            {
+                                if (role == "Manager")
+                                {
+                                    <a href="@Url.Action("Dashboard", "Manager")" class="active">Manager Dashboard</a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("Index", "Customer")" class="active">Customer Dashboard</a>
+                                }
+                            }
+                            else
+                            {
+                                <a asp-controller="Auth" asp-action="Login" class="active">Register/Login</a>
+                            }
+                        </div>
+                    </nav>
+                </header>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
-</html>
+                <main role="main">
+                    @RenderBody()
+                </main>
+            }
+
+            <script src="~/lib/jquery/dist/jquery.min.js"></script>
+            <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="~/js/site.js" asp-append-version="true"></script>
+            @await RenderSectionAsync("Scripts", required: false)
+        </body>
+    </html>

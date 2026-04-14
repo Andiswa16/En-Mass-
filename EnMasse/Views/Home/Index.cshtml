@@ -1,27 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Home";
-    Layout = "_Layout";
 }
 
-<div style="position:relative; width:100%; height:100vh; overflow:hidden; margin:-30px;">
-    <img src="~/images/warehouse.jpg" style="width:100%; height:100%; object-fit:cover; display:block;" />
-    <div style="position:absolute; inset:0; background:rgba(0,0,0,0.55);"></div>
-
-    <!-- Top nav -->
-    <div style="position:absolute; top:0; left:0; right:0; display:flex; justify-content:flex-end; align-items:center; padding:20px 40px; gap:30px;">
-        <a href="#" style="color:white; text-decoration:none; font-size:15px;">Home</a>
-        <a href="#" style="color:white; text-decoration:none; font-size:15px;">About us</a>
-        <a href="#" style="color:white; text-decoration:none; font-size:15px;">Services</a>
-        <a asp-controller="Auth" asp-action="Login"
-               style="color:white; text-decoration:none; font-size:15px; font-weight:700;">
-            Register/Login
-        </a>
-    </div>
-
-    <!-- Hero text -->
-    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; color:white;">
-        <h1 style="font-size:72px; font-weight:900; letter-spacing:2px; margin:0;">EN MASSÉ</h1>
-        <h1 style="font-size:72px; font-weight:900; color:#e05a2b; margin:0 0 20px;">LOGISTICS</h1>
-        <p style="letter-spacing:6px; font-size:16px; border-bottom:2px solid #e05a2b; padding-bottom:8px;">ON TIME. EVERY TIME.</p>
-    </div>
-</div>
+<section class="hero">
+    <h1>EN MASSÉ <span>LOGISTICS</span></h1>
+    <div class="tagline">O N &nbsp; T I M E . &nbsp; E V E R Y &nbsp; T I M E .</div>
+</section>

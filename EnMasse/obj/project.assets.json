@@ -4718,11 +4718,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\lab_services_student\\source\\repos\\EnMasse\\EnMasse\\EnMasse.csproj",
+      "projectUniqueName": "C:\\Users\\lab_services_student\\source\\repos\\En-Mass-\\EnMasse\\EnMasse.csproj",
       "projectName": "EnMasse",
-      "projectPath": "C:\\Users\\lab_services_student\\source\\repos\\EnMasse\\EnMasse\\EnMasse.csproj",
+      "projectPath": "C:\\Users\\lab_services_student\\source\\repos\\En-Mass-\\EnMasse\\EnMasse.csproj",
       "packagesPath": "C:\\Users\\lab_services_student\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\lab_services_student\\source\\repos\\EnMasse\\EnMasse\\obj\\",
+      "outputPath": "C:\\Users\\lab_services_student\\source\\repos\\En-Mass-\\EnMasse\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

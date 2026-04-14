@@ -12,11 +12,14 @@ namespace EnMasse
             builder.Services.AddControllersWithViews();
             builder.Services.AddHttpContextAccessor();
 
-            // ✅ SIMPLIFIED - no retry, just plain connection
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(
-                    builder.Configuration.GetConnectionString("DefaultConnection")
-                ));
+            options.UseSqlServer(
+                builder.Configuration.GetConnectionString("DefaultConnection"),
+                sqlServerOptionsAction: sqlOptions =>
+                {
+                    sqlOptions.EnableRetryOnFailure();
+                }
+            ));
 
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>

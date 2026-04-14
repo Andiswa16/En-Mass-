@@ -9,12 +9,10 @@ namespace EnMasse.Controllers
     {
         public IActionResult Index()
         {
-            if (HttpContext.Session.GetString("UserID") != null)
-                return RedirectToAction("Index", "Customer");
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult About()
         {
             return View();
         }

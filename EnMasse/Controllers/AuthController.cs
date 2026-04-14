@@ -15,22 +15,35 @@ namespace EnMasse.Controllers
             db = context;
         }
 
+        // Helper Method: Routes users to the correct domain based on their role
+        private IActionResult RedirectToDashboard()
+        {
+            var role = HttpContext.Session.GetString("Role");
+            if (role == "Manager")
+            {
+                return RedirectToAction("Dashboard", "Manager");
+            }
+            return RedirectToAction("Index", "Customer");
+        }
+
         public IActionResult Index()
         {
             if (HttpContext.Session.GetString("UserID") != null)
-                return RedirectToAction("Index", "Customer");
+                return RedirectToDashboard();
+
             return RedirectToAction("Login");
         }
 
-        // ✅ LOGIN GET
+        // LOGIN GET
         public IActionResult Login()
         {
             if (HttpContext.Session.GetString("UserID") != null)
-                return RedirectToAction("Index", "Customer");
+                return RedirectToDashboard();
+
             return View();
         }
 
-        // ✅ LOGIN POST
+        // LOGIN POST
         [HttpPost]
         public IActionResult Login(string username, string password)
         {
@@ -40,6 +53,16 @@ namespace EnMasse.Controllers
                 return View();
             }
 
+            // The Manager Backdoor
+            if (username == "Manager" && password == "Logistics2026!")
+            {
+                HttpContext.Session.SetString("UserID", "9999");
+                HttpContext.Session.SetString("Role", "Manager");
+                HttpContext.Session.SetString("Username", "Jane Doe");
+                return RedirectToAction("Dashboard", "Manager");
+            }
+
+            // Standard Customer Login
             var user = db.Users.FirstOrDefault(u =>
                 u.Username == username && u.Password == password);
 
@@ -48,22 +71,24 @@ namespace EnMasse.Controllers
                 HttpContext.Session.SetString("UserID", user.UserID.ToString());
                 HttpContext.Session.SetString("Role", user.Role);
                 HttpContext.Session.SetString("Username", user.Username);
-                return RedirectToAction("Index", "Customer");
+
+                return RedirectToDashboard();
             }
 
             ViewBag.Error = "Invalid username or password.";
             return View();
         }
 
-        // ✅ REGISTER GET
+        // REGISTER GET
         public IActionResult Register()
         {
             if (HttpContext.Session.GetString("UserID") != null)
-                return RedirectToAction("Index", "Customer");
+                return RedirectToDashboard();
+
             return View();
         }
 
-        // ✅ REGISTER POST
+        // REGISTER POST
         [HttpPost]
         public IActionResult Register(Registration reg, string Password)
         {
@@ -105,17 +130,17 @@ namespace EnMasse.Controllers
                 HttpContext.Session.SetString("Username", user.Username);
 
                 TempData["Success"] = "Registration successful! Welcome, " + username + ".";
-                return RedirectToAction("Index", "Customer");
+                return RedirectToDashboard();
             }
 
             return View(reg);
         }
 
-        // ✅ LOGOUT
+        // LOGOUT
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
-            return RedirectToAction("Login");
+            return RedirectToAction("Index", "Home");
         }
     }
 }
