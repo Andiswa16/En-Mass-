@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\lab_services_student\\source\\repos\\En-Mass-\\EnMasse\\EnMasse.csproj": {}
+    "C:\\Users\\mindl\\Source\\Repos\\En-Mass-\\EnMasse\\EnMasse.csproj": {}
   },
   "projects": {
-    "C:\\Users\\lab_services_student\\source\\repos\\En-Mass-\\EnMasse\\EnMasse.csproj": {
+    "C:\\Users\\mindl\\Source\\Repos\\En-Mass-\\EnMasse\\EnMasse.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lab_services_student\\source\\repos\\En-Mass-\\EnMasse\\EnMasse.csproj",
+        "projectUniqueName": "C:\\Users\\mindl\\Source\\Repos\\En-Mass-\\EnMasse\\EnMasse.csproj",
         "projectName": "EnMasse",
-        "projectPath": "C:\\Users\\lab_services_student\\source\\repos\\En-Mass-\\EnMasse\\EnMasse.csproj",
-        "packagesPath": "C:\\Users\\lab_services_student\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lab_services_student\\source\\repos\\En-Mass-\\EnMasse\\obj\\",
+        "projectPath": "C:\\Users\\mindl\\Source\\Repos\\En-Mass-\\EnMasse\\EnMasse.csproj",
+        "packagesPath": "C:\\Users\\mindl\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\mindl\\Source\\Repos\\En-Mass-\\EnMasse\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\lab_services_student\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\mindl\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -48,7 +48,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.200"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
@@ -94,7 +94,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

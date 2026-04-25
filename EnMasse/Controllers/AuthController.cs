@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using EnMasse.Models;
+using EnMasse.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -19,10 +20,13 @@ namespace EnMasse.Controllers
         private IActionResult RedirectToDashboard()
         {
             var role = HttpContext.Session.GetString("Role");
+
             if (role == "Manager")
-            {
                 return RedirectToAction("Dashboard", "Manager");
-            }
+
+            if (role == "Driver")
+                return RedirectToAction("Dashboard", "DriverDashboard");
+
             return RedirectToAction("Index", "Customer");
         }
 
@@ -53,7 +57,18 @@ namespace EnMasse.Controllers
                 return View();
             }
 
-            // The Manager Backdoor
+            // 1. Driver login 
+            var driver = MockDriverData.Authenticate(username, password);
+
+            if (driver != null)
+            {
+                HttpContext.Session.SetString("UserID", driver.Id.ToString());
+                HttpContext.Session.SetString("Role", "Driver");
+                HttpContext.Session.SetString("Username", driver.DUsername);
+
+                return RedirectToAction("Dashboard", "DriverDashboard");
+            }
+            // 2. Manager login
             if (username == "Manager" && password == "Logistics2026!")
             {
                 HttpContext.Session.SetString("UserID", "9999");
@@ -62,7 +77,7 @@ namespace EnMasse.Controllers
                 return RedirectToAction("Dashboard", "Manager");
             }
 
-            // Standard Customer Login
+            // 3. Customer login
             var user = db.Users.FirstOrDefault(u =>
                 u.Username == username && u.Password == password);
 

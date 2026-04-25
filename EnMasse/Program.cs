@@ -41,7 +41,9 @@ namespace EnMasse
             app.UseStaticFiles();
             app.UseRouting();
             app.UseSession();
+            app.UseAuthentication();
             app.UseAuthorization();
+      
 
             app.MapControllerRoute(
                 name: "default",
