@@ -1,0 +1,190 @@
+﻿@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var username = HttpContextAccessor.HttpContext?.Session.GetString("Username");
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - En Massé Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #161616;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .admin-shell {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 240px;
+            background: #111111;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            flex-shrink: 0;
+            position: fixed;
+            height: 100vh;
+            z-index: 200;
+            border-right: 1px solid #1e1e1e;
+        }
+
+        .sidebar-logo {
+            padding: 22px 22px 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-logo img { height: 36px; }
+
+        .sidebar-logo-text {
+            font-size: 11px;
+            color: #777;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            line-height: 1.3;
+        }
+
+        .sidebar-section-title {
+            font-size: 10px;
+            color: #444;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 18px 22px 6px;
+            font-weight: 700;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 11px 22px;
+            color: #888;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .sidebar-link:hover {
+            color: #fff;
+            background: #1a1a1a;
+            border-left-color: #f24e29;
+            text-decoration: none;
+        }
+
+        .sidebar-link.active {
+            color: #fff;
+            background: #1f1f1f;
+            border-left-color: #f24e29;
+        }
+
+        .sidebar-link .link-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-link.active .link-icon { color: #f24e29; }
+
+        /* Disabled sidebar link — for unimplemented pages */
+        .sidebar-link.disabled {
+            opacity: 0.35;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        .sidebar-spacer { flex: 1; }
+
+        .sidebar-bottom {
+            padding: 10px 0 20px;
+            border-top: 1px solid #1e1e1e;
+        }
+
+        .sidebar-link.logout { color: #f24e29; }
+        .sidebar-link.logout:hover { color: #ff6b47; background: #1a1010; }
+
+        /* ── MAIN ── */
+        .admin-main {
+            margin-left: 240px;
+            flex: 1;
+            min-height: 100vh;
+            background: #161616;
+            color: #fff;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body>
+<div class="admin-shell">
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="~/images/logo.png" alt="En Massé" />
+            <div class="sidebar-logo-text">En Massé<br/>Logistics</div>
+        </div>
+
+        <div class="sidebar-section-title">Admin Portal</div>
+
+        {{!-- FIX: corrected labels and destinations --}}
+        <a href="/Admin/Dashboard"
+           class="sidebar-link @(currentController == "Admin" && currentAction == "Dashboard" ? "active" : "")">
+            <span class="link-icon">📊</span> Dashboard
+        </a>
+        <a href="/Admin/Clients"
+           class="sidebar-link @(currentController == "Admin" && currentAction == "Clients" ? "active" : "")">
+            <span class="link-icon">👤</span> Clients
+        </a>
+        <a href="/Admin/Drivers"
+           class="sidebar-link @(currentController == "Admin" && currentAction == "Drivers" ? "active" : "")">
+            <span class="link-icon">🚛</span> Drivers
+        </a>
+        <a href="/Admin/Deliveries"
+           class="sidebar-link @(currentController == "Admin" && currentAction == "Deliveries" ? "active" : "")">
+            <span class="link-icon">📋</span> Deliveries
+        </a>
+
+        <div class="sidebar-spacer"></div>
+
+        <div class="sidebar-bottom">
+            {{!-- FIX: disabled unimplemented links instead of dead href="#" --}}
+            <a href="#" class="sidebar-link disabled" title="Coming soon">
+                <span class="link-icon">❓</span> Help
+            </a>
+            <a href="#" class="sidebar-link disabled" title="Coming soon">
+                <span class="link-icon">⚙️</span> Settings
+            </a>
+            <a href="/Auth/Logout" class="sidebar-link logout">
+                <span class="link-icon">➤</span> Log out
+            </a>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        @RenderBody()
+    </main>
+
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

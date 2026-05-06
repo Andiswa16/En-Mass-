@@ -16,7 +16,33 @@ namespace EnMasse.Controllers
             db = context;
         }
 
-        // Helper Method: Routes users to the correct domain based on their role
+        // ================================
+        // 🔹 SIMPLE MOCK USERS (ALL HERE)
+        // ================================
+
+        private class MockUser
+        {
+            public int Id { get; set; }
+            public string Username { get; set; }
+            public string Password { get; set; }
+            public string Role { get; set; }
+        }
+
+        private static readonly List<MockUser> mockUsers = new List<MockUser>
+        {
+            // 👨‍✈️ Driver
+            new MockUser { Id = 1, Username = "driver1", Password = "Driver123!", Role = "Driver" },
+
+            // 👨‍💼 Manager
+            new MockUser { Id = 2, Username = "manager", Password = "Manager123!", Role = "Manager" },
+
+            // 🛠 Admin
+            new MockUser { Id = 3, Username = "admin", Password = "Admin123!", Role = "Admin" }
+        };
+
+        // ================================
+        // 🔁 REDIRECT BASED ON ROLE
+        // ================================
         private IActionResult RedirectToDashboard()
         {
             var role = HttpContext.Session.GetString("Role");
@@ -26,6 +52,9 @@ namespace EnMasse.Controllers
 
             if (role == "Driver")
                 return RedirectToAction("Dashboard", "DriverDashboard");
+
+            if (role == "Admin")
+                return RedirectToAction("Dashboard", "Admin");
 
             return RedirectToAction("Index", "Customer");
         }
@@ -38,7 +67,9 @@ namespace EnMasse.Controllers
             return RedirectToAction("Login");
         }
 
-        // LOGIN GET
+        // ================================
+        // 🔐 LOGIN
+        // ================================
         public IActionResult Login()
         {
             if (HttpContext.Session.GetString("UserID") != null)
@@ -47,7 +78,6 @@ namespace EnMasse.Controllers
             return View();
         }
 
-        // LOGIN POST
         [HttpPost]
         public IActionResult Login(string username, string password)
         {
@@ -57,27 +87,19 @@ namespace EnMasse.Controllers
                 return View();
             }
 
-            // 1. Driver login 
-            var driver = MockDriverData.Authenticate(username, password);
+            // 🔹 1. CHECK MOCK USERS (Driver, Manager, Admin)
+            var mockUser = mockUsers.FirstOrDefault(u =>
+                u.Username == username && u.Password == password);
 
-            if (driver != null)
+            if (mockUser != null)
             {
-                HttpContext.Session.SetString("UserID", driver.Id.ToString());
-                HttpContext.Session.SetString("Role", "Driver");
-                HttpContext.Session.SetString("Username", driver.DUsername);
-
-                return RedirectToAction("Dashboard", "DriverDashboard");
-            }
-            // 2. Manager login
-            if (username == "Manager" && password == "Logistics2026!")
-            {
-                HttpContext.Session.SetString("UserID", "9999");
-                HttpContext.Session.SetString("Role", "Manager");
-                HttpContext.Session.SetString("Username", "Jane Doe");
-                return RedirectToAction("Dashboard", "Manager");
+                HttpContext.Session.SetString("UserID", mockUser.Id.ToString());
+                HttpContext.Session.SetString("Role", mockUser.Role);
+                HttpContext.Session.SetString("Username", mockUser.Username);
+                return RedirectToDashboard();
             }
 
-            // 3. Customer login
+            // 🔹 2. CUSTOMER (DATABASE)
             var user = db.Users.FirstOrDefault(u =>
                 u.Username == username && u.Password == password);
 
@@ -86,7 +108,6 @@ namespace EnMasse.Controllers
                 HttpContext.Session.SetString("UserID", user.UserID.ToString());
                 HttpContext.Session.SetString("Role", user.Role);
                 HttpContext.Session.SetString("Username", user.Username);
-
                 return RedirectToDashboard();
             }
 
@@ -94,7 +115,9 @@ namespace EnMasse.Controllers
             return View();
         }
 
-        // REGISTER GET
+        // ================================
+        // 📝 REGISTER (CUSTOMERS ONLY)
+        // ================================
         public IActionResult Register()
         {
             if (HttpContext.Session.GetString("UserID") != null)
@@ -103,7 +126,6 @@ namespace EnMasse.Controllers
             return View();
         }
 
-        // REGISTER POST
         [HttpPost]
         public IActionResult Register(Registration reg, string Password)
         {
@@ -129,7 +151,7 @@ namespace EnMasse.Controllers
                 db.Registrations.Add(reg);
                 db.SaveChanges();
 
-                User user = new User
+                var user = new User
                 {
                     Username = username,
                     Password = Password,
@@ -151,7 +173,9 @@ namespace EnMasse.Controllers
             return View(reg);
         }
 
-        // LOGOUT
+        // ================================
+        // 🚪 LOGOUT
+        // ================================
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

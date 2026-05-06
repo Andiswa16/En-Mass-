@@ -1,0 +1,28 @@
+﻿@model List<EnMasse.Models.Delivery>
+
+<h2>Delivery Report</h2>
+
+<table class="table table-dark">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Status</th>
+            <th>Pickup</th>
+            <th>Delivery</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>@d.DeliveryID</td>
+                <td>@d.Status</td>
+                <td>@d.PickupAddress</td>
+                <td>@d.DeliveryAddress</td>
+                <td>@d.CreatedDate.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>

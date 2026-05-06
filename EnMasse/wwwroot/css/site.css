@@ -1,13 +1,22 @@
 /* =========================================
+   EN MASSÉ — SITE.CSS (FIXED)
+   Fixes: broken CSS class names (spaces in hyphens),
+   consistent button styles, dark theme throughout
+   ========================================= */
+
+/* =========================================
    1. ROOT VARIABLES & BASE TYPOGRAPHY
    ========================================= */
 :root {
     --bg-dark: #161616;
     --bg-card: #222222;
     --accent: #f24e29;
+    --accent-dark: #c94a12;
     --text-light: #ffffff;
     --text-muted: #b3b3b3;
     --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --border-color: #2a2a2a;
+    --sidebar-width: 240px;
 }
 
 html {
@@ -31,7 +40,160 @@ body {
 }
 
 /* =========================================
-   2. EN MASSÉ CUSTOM UI
+   2. ADMIN LAYOUT — FIXED CLASS NAMES
+   (Previously had spaces: .admin - layout)
+   ========================================= */
+.admin-layout {
+    display: flex;
+}
+
+.sidebar-container {
+    width: 260px;
+    min-height: 100vh;
+    background: #1f2937;
+}
+
+    .sidebar-container a {
+        display: block;
+        color: white;
+        margin: 10px 0;
+        text-decoration: none;
+    }
+
+.main-content {
+    flex-grow: 1;
+    padding: 24px;
+    background: var(--bg-dark);
+    color: var(--text-light);
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.stats-card {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    text-align: center;
+    color: var(--text-light);
+}
+
+.table-style {
+    width: 100%;
+    background: var(--bg-card);
+    border-collapse: collapse;
+    color: var(--text-light);
+}
+
+    .table-style th,
+    .table-style td {
+        padding: 10px;
+        border: 1px solid var(--border-color);
+    }
+
+/* =========================================
+   3. CONSISTENT BUTTON SYSTEM
+   Use these classes everywhere across all roles
+   ========================================= */
+
+/* Primary — orange fill (Submit, Create, Save) */
+.btn-primary {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+    .btn-primary:hover {
+        background: var(--accent-dark);
+        color: white;
+        text-decoration: none;
+    }
+
+/* Secondary — outlined orange (Cancel, Back) */
+.btn-secondary {
+    background: transparent;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+    .btn-secondary:hover {
+        background: rgba(242, 78, 41, 0.1);
+        color: var(--accent);
+        text-decoration: none;
+    }
+
+/* Danger — red outline (Delete) */
+.btn-danger {
+    background: transparent;
+    color: #ff4444;
+    border: 1.5px solid #ff4444;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+    .btn-danger:hover {
+        background: rgba(255, 68, 68, 0.1);
+    }
+
+/* Update/action — small orange fill (table actions) */
+.btn-update {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+    .btn-update:hover {
+        background: var(--accent-dark);
+    }
+
+/* Disabled state for unimplemented links */
+.btn-disabled,
+a.btn-disabled {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+/* =========================================
+   4. EN MASSÉ CUSTOM UI
    ========================================= */
 
 /* Navigation */
@@ -61,24 +223,25 @@ body {
 
     .nav-links a.active {
         font-weight: bold;
+        color: var(--accent);
     }
 
 .navbar .logo {
     display: flex;
     align-items: center;
-    gap: 10px; /* Space between the logo and the text */
+    gap: 10px;
 }
 
     .navbar .logo img {
         height: 40px;
-        width: auto; /* Keeps the image proportional */
+        width: auto;
         object-fit: contain;
     }
 
-/* Hero Section (Welcome Screen) */
+/* Hero Section */
 .hero {
     height: 100vh;
-    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/warehouse.jpeg') center/cover;
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/images/warehouse.jpeg') center/cover;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -105,7 +268,7 @@ body {
         padding-bottom: 10px;
     }
 
-/* Content Sections (About, Vision, etc.) */
+/* Content Sections */
 .content-section {
     padding: 80px 10%;
     display: flex;
@@ -164,6 +327,7 @@ body {
     width: 200px;
     text-align: center;
     overflow: hidden;
+    border-radius: 8px;
 }
 
     .team-card img {
@@ -178,19 +342,110 @@ body {
         color: var(--text-light);
     }
 
-/* =========================================
-   3. AUTHENTICATION & BOOTSTRAP UTILITIES
-   ========================================= */
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 12px;
+}
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+.status-pending {
+    background: #333;
+    color: #aaa;
+}
+
+.status-in-transit {
+    background: #332200;
+    color: #f59e0b;
+}
+
+.status-delivered {
+    background: #0d2e1a;
+    color: #10b981;
+}
+
+/* =========================================
+   5. AUTHENTICATION & BOOTSTRAP UTILITIES
+   ========================================= */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
     color: var(--bs-secondary-color);
     text-align: end;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+/* =========================================
+   6. SHARED FORM INPUTS
+   ========================================= */
+.form-input {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 30px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+    outline: none;
+    font-family: var(--font-main);
+}
+
+    .form-input:focus {
+        border-color: var(--accent);
+    }
+
+.form-input-dark {
+    width: 100%;
+    background: #222;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    font-size: 0.95rem;
+    color: #fff;
+    outline: none;
+    transition: all 0.2s ease;
+    font-family: var(--font-main);
+}
+
+    .form-input-dark::placeholder {
+        color: #888;
+    }
+
+    .form-input-dark:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px rgba(232, 87, 26, 0.25);
+        background: #1e1e1e;
+    }
+
+/* =========================================
+   7. SEARCH BOX (ADMIN/MANAGER)
+   ========================================= */
+.search-box {
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: 1.5px solid #333;
+    background: #222;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    width: 300px;
+    transition: border-color 0.2s;
+    font-family: var(--font-main);
+}
+
+    .search-box:focus {
+        border-color: var(--accent);
+    }

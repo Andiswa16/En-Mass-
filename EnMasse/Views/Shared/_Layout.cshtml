@@ -13,88 +13,217 @@
     <title>@ViewData["Title"] - En Massé Logistics</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" />
+    <style>
+        /* Force dark background across whole page */
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: #111111 !important;
+            color: #ffffff;
+        }
+
+        /* ── CUSTOMER SIDEBAR ── */
+        .customer-shell {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .customer-sidebar {
+            width: 220px;
+            background: #111111;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            border-right: 1px solid #1e1e1e;
+        }
+
+        .customer-sidebar-logo {
+            padding: 20px 16px 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #1e1e1e;
+            margin-bottom: 8px;
+        }
+
+        .customer-sidebar-logo img { height: 35px; }
+
+        .customer-sidebar-role {
+            padding: 8px 20px 16px;
+        }
+
+        .customer-sidebar-role p {
+            color: #aaa;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .customer-sidebar-role strong {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .cust-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #888;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .cust-nav-link:hover,
+        .cust-nav-link.active {
+            color: #fff;
+            background: #1a1a1a;
+            border-left-color: #f24e29;
+            text-decoration: none;
+        }
+
+        .cust-nav-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+            flex-shrink: 0;
+            color: #e05a2b;
+        }
+
+        .cust-nav-spacer { flex: 1; }
+
+        .cust-nav-logout { color: #f24e29 !important; }
+        .cust-nav-logout:hover { background: #1a1010 !important; color: #ff6b47 !important; }
+
+        .customer-main {
+            margin-left: 220px;
+            flex: 1;
+            padding: 30px;
+            background-color: #161616;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+    </style>
 </head>
-<body style="margin:0; padding:0; background: var(--bg-dark);">
+<body style="margin:0; padding:0; background:#111111;">
 
     @if (isLoggedIn && role == "Customer")
     {
-        <div style="display:flex; min-height:100vh;">
-            <nav style="width:220px; background:#1a1a1a; color:white; display:flex; flex-direction:column; padding:20px 0; position:fixed; height:100vh; z-index:100;">
-
-                <div style="padding:0 20px 10px; display:flex; align-items:center; gap:10px;">
-                    <img src="~/images/logo.png" alt="En Massé Logo" style="height: 35px;">
-                    </div>
-                    <div style="padding:0 20px 30px;">
-                        <p style="color:white; font-weight:700; font-size:15px; margin:0;">@role</p>
-                        <p style="color:white; font-weight:700; font-size:15px; margin:0;">Dashboard</p>
-                    </div>
-
-                    <a asp-controller="Customer" asp-action="Index"
-                           style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
-                        <span style="color:#e05a2b;">&#9776;</span> Dashboard
-                    </a>
-                    <a asp-controller="Customer" asp-action="RequestDelivery"
-                           style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
-                        <span style="color:#e05a2b;">&#128666;</span> Request Delivery
-                    </a>
-                    <a asp-controller="Customer" asp-action="DeliveryStatus"
-                           style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
-                        <span style="color:#e05a2b;">&#128204;</span> Delivery Status
-                    </a>
-
-                    <div style="flex:1;"></div>
-
-                    <a asp-controller="Auth" asp-action="Logout"
-                           style="display:flex; align-items:center; gap:12px; padding:12px 20px; color:white; text-decoration:none; font-size:14px;">
-                        <span style="color:#e05a2b;">&#10148;</span> Log out
-                    </a>
-                </nav>
-
-                <div style="margin-left:220px; flex:1; padding:30px; background-color: #e0e0e0; color: #000;">
-                    @RenderBody()
+        <div class="customer-shell">
+            <nav class="customer-sidebar">
+                <div class="customer-sidebar-logo">
+                    <img src="~/images/logo.png" alt="En Massé Logo" />
                 </div>
+                <div class="customer-sidebar-role">
+                    <p>Logged in as</p>
+                    <strong>@username</strong>
+                </div>
+
+                <a asp-controller="Customer" asp-action="Index"
+                   class="cust-nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">
+                    <span class="cust-nav-icon">☰</span> Dashboard
+                </a>
+
+                <a asp-controller="Customer" asp-action="RequestDelivery"
+                   class="cust-nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "RequestDelivery" ? "active" : "")">
+                    <span class="cust-nav-icon">🚚</span> Request Delivery
+                </a>
+
+                <a asp-controller="Customer" asp-action="DeliveryStatus"
+                   class="cust-nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "DeliveryStatus" ? "active" : "")">
+                    <span class="cust-nav-icon">📍</span> Delivery Status
+                </a>
+
+                <a asp-controller="Customer" asp-action="Report"
+                   class="cust-nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Report" ? "active" : "")">
+                    <span class="cust-nav-icon">📄</span> Report
+                </a>
+
+                <a asp-controller="Customer" asp-action="LogTicket"
+                   class="cust-nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "LogTicket" ? "active" : "")">
+                    <span class="cust-nav-icon">🎫</span> Log a Ticket
+                </a>
+
+                <div class="cust-nav-spacer"></div>
+
+                <a asp-controller="Customer" asp-action="Help"
+                   class="cust-nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Help" ? "active" : "")">
+                    <span class="cust-nav-icon">❓</span> Help
+                </a>
+
+                <a asp-controller="Customer" asp-action="Settings"
+                   class="cust-nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Settings" ? "active" : "")">
+                    <span class="cust-nav-icon">⚙️</span> Settings
+                </a>
+
+                <a asp-controller="Auth" asp-action="Logout"
+                   class="cust-nav-link cust-nav-logout">
+                    <span class="cust-nav-icon">➤</span> Log out
+                </a>
+            </nav>
+
+            <div class="customer-main">
+                @RenderBody()
             </div>
-        }
+        </div>
+    }
     else
-        {
-            <header>
-                <nav class="navbar">
-                    <div class="logo">
-                        <img src="~/images/logo.png" alt="En Massé Logo">
-                            <span style="font-size: 1.2rem; font-weight: bold; color: var(--text-light);">En Massé Logistics</span>
-                        </div>
-                        <div class="nav-links">
-                            <a href="@Url.Action("Index", "Home")">Home</a>
-                            <a href="@Url.Action("About", "Home")">About us</a>
-                            <a href="#">Services</a>
-                    
-                            @if (isLoggedIn)
-                            {
-                                if (role == "Manager")
-                                {
-                                    <a href="@Url.Action("Dashboard", "Manager")" class="active">Manager Dashboard</a>
-                                }
-                                else
-                                {
-                                    <a href="@Url.Action("Index", "Customer")" class="active">Customer Dashboard</a>
-                                }
-                            }
-                            else
-                            {
-                                <a asp-controller="Auth" asp-action="Login" class="active">Register/Login</a>
-                            }
-                        </div>
-                    </nav>
-                </header>
+    {
+        <header>
+            <nav class="navbar">
+                <div class="logo">
+                    <img src="~/images/logo.png" alt="En Massé Logo">
+                    <span style="font-size: 1.2rem; font-weight: bold; color: var(--text-light);">En Massé Logistics</span>
+                </div>
+                <div class="nav-links">
+                    <a href="@Url.Action("Index", "Home")">Home</a>
+                    <a href="@Url.Action("About", "Home")">About us</a>
+                    <a href="#">Services</a>
 
-                <main role="main">
-                    @RenderBody()
-                </main>
-            }
+                    @if (isLoggedIn)
+                    {
+                        if (role == "Manager")
+                        {
+                            <a href="@Url.Action("Dashboard", "Manager")" class="active">Manager Dashboard</a>
+                        }
+                        else if (role == "Admin")
+                        {
+                            <a href="@Url.Action("Dashboard", "Admin")" class="active">Admin Dashboard</a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Index", "Customer")" class="active">Customer Dashboard</a>
+                        }
+                    }
+                    else
+                    {
+                        <a asp-controller="Auth" asp-action="Login" class="active">Register / Login</a>
+                    }
+                </div>
+            </nav>
+        </header>
 
-            <script src="~/lib/jquery/dist/jquery.min.js"></script>
-            <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="~/js/site.js" asp-append-version="true"></script>
-            @await RenderSectionAsync("Scripts", required: false)
-        </body>
-    </html>
+        <main role="main">
+            @RenderBody()
+        </main>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,39 @@
+﻿@model List<EnMasse.Models.Delivery>
+
+@{
+    ViewData["Title"] = "Report";
+    Layout = "_Layout";
+}
+
+<h2>Delivery Report</h2>
+
+<p>Total Deliveries: @Model.Count</p>
+<p>Delivered: @Model.Count(d => d.Status == "Delivered")</p>
+<p>In Transit: @Model.Count(d => d.Status == "In Transit")</p>
+<p>Pending: @Model.Count(d => d.Status == "Pending")</p>
+
+<hr />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Pickup</th>
+            <th>Destination</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>#DR@d.DeliveryID</td>
+                <td>@d.PickupAddress</td>
+                <td>@d.DeliveryAddress</td>
+                <td>@d.Status</td>
+                <td>@d.DeliveryDate.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>

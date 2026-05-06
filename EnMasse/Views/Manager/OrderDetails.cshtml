@@ -1,34 +1,54 @@
-﻿@model EnMasse.Models.Order
+﻿@model EnMasse.Models.Delivery
 @{
     Layout = null;
 }
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <title>Order Details - @Model.ReqId</title>
+    <title>Assign Driver - En Massé</title>
     <style>
-        body { font-family: sans-serif; background-color: #e0e0e0; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); width: 400px; text-align: center; }
-        .back-btn { display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #f24e29; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; transition: opacity 0.3s; }
-        .back-btn:hover { opacity: 0.8; }
-        
-        .status-delayed { color: #d9534f; font-weight: bold; }     /* Red */
-        .status-delivered { color: #5cb85c; font-weight: bold; }   /* Green */
-        .status-intransit { color: #f0ad4e; font-weight: bold; }   /* Orange/Yellow */
+        body { font-family: 'Segoe UI', sans-serif; background: #161616; color: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: #222; padding: 40px; border-radius: 15px; width: 450px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { color: #f24e29; margin-top: 0; }
+        .info-box { background: #1a1a1a; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #f24e29; }
+        .label { color: #888; font-size: 12px; text-transform: uppercase; }
+        .value { font-size: 16px; margin-bottom: 10px; display: block; }
+        select { width: 100%; padding: 12px; background: #333; color: white; border: 1px solid #444; border-radius: 5px; margin-bottom: 20px; outline: none; }
+        .btn-assign { background: #f24e29; color: white; width: 100%; padding: 14px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .btn-assign:hover { background: #ff6b47; }
+        .back-link { display: block; text-align: center; margin-top: 20px; color: #888; text-decoration: none; font-size: 14px; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h2 style="margin-top: 0;">Order #@Model.ReqId</h2>
-        <hr style="border: 1px solid #eee; margin-bottom: 20px;" />
-        
-        <p><strong>Client:</strong> @Model.Client</p>
-        <p><strong>Destination:</strong> @Model.Destination</p>
-        
-        <p><strong>Current Status:</strong> <span class="status-@(Model.Status.ToLower().Replace(" ", ""))">@Model.Status</span></p>
+        <h2>Review Request #@Model.DeliveryID</h2>
+        <div class="info-box">
+            <span class="label">Client Name</span>
+            <span class="value">@Model.User?.Username</span>
+            
+            <span class="label">Delivery Destination</span>
+            <span class="value">@Model.DeliveryAddress</span>
 
-        <a href="@Url.Action("Dashboard", "Manager")" class="back-btn">← Back to Dashboard</a>
+            <span class="label">Current Status</span>
+            <span class="value" style="color:#f59e0b">@Model.Status</span>
+        </div>
+
+        <form asp-action="AssignDriver" method="post">
+            <input type="hidden" name="deliveryId" value="@Model.DeliveryID" />
+            
+            <label class="label">Select Available Driver</label>
+            <select name="driverId" required>
+                <option value="">-- Choose Personnel --</option>
+                @foreach (var driver in ViewBag.Drivers)
+                {
+                    <option value="@driver.UserID">@driver.Username (Driver ID: @driver.UserID)</option>
+                }
+            </select>
+
+            <button type="submit" class="btn-assign">Approve & Assign Driver</button>
+        </form>
+
+        <a href="@Url.Action("Dashboard")" class="back-link">← Return to Dashboard</a>
     </div>
 </body>
 </html>

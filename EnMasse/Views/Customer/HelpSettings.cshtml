@@ -1,0 +1,73 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Help & Settings";
+    Layout = "_Layout";
+
+    var username = HttpContextAccessor.HttpContext?.Session.GetString("Username");
+    bool isSettings = ViewBag.Page == "Settings";
+}
+
+<div class="hs-wrap">
+
+    <!-- Tabs -->
+    <div class="tab-nav">
+        <button class="tab-btn @(!isSettings ? "active" : "")" onclick="switchTab('help', this)">❓ Help</button>
+        <button class="tab-btn @(isSettings ? "active" : "")" onclick="switchTab('settings', this)">⚙️ Settings</button>
+    </div>
+
+    <!-- HELP -->
+    <div class="tab-panel @(!isSettings ? "active" : "")" id="panel-help">
+        <h2>Help Centre</h2>
+        <p>Need assistance? Contact us below.</p>
+
+        <p>📞 +27 800 123 456</p>
+        <p>✉️ support@enmasse.co.za</p>
+
+        <h4>FAQs</h4>
+        <ul>
+            <li>Track deliveries via Delivery Status page</li>
+            <li>Log a ticket if something is wrong</li>
+            <li>Reports can be downloaded as PDF</li>
+        </ul>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="tab-panel @(isSettings ? "active" : "")" id="panel-settings">
+        <h2>Settings</h2>
+
+        <div>
+            <label>Username</label>
+            <input value="@username" readonly />
+        </div>
+
+        <div>
+            <label>Email</label>
+            <input id="emailInput" type="email" placeholder="your@email.com" />
+        </div>
+
+        <div>
+            <label>Phone</label>
+            <input id="phoneInput" type="tel" placeholder="+27..." />
+        </div>
+
+        <button onclick="saveSettings()">Save</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function switchTab(name, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+            btn.classList.add('active');
+            document.getElementById('panel-' + name).classList.add('active');
+        }
+
+        function saveSettings() {
+            alert("Settings saved!");
+        }
+    </script>
+}

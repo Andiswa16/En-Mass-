@@ -7,152 +7,398 @@
     var username = HttpContextAccessor.HttpContext?.Session.GetString("Username");
 }
 
-<div style="padding:20px;">
-
-    <!-- Top bar -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-        <div style="display:flex; align-items:center; gap:16px;">
-            <div style="background:white; border-radius:50%; width:56px; height:56px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid #ddd; font-weight:700; font-size:18px;">
-                @DateTime.Now.Day
-                <span style="font-size:10px; font-weight:400; color:#666;">@DateTime.Now.ToString("ddd MMM")</span>
-            </div>
-            <div style="background:white; border-radius:30px; border:1px solid #333; padding:10px 20px; display:flex; align-items:center; gap:8px; min-width:280px;">
-                <span>&#128269;</span>
-                <input type="text" id="searchInput" placeholder="Search for a delivery"
-                       onkeyup="filterTable()"
-                       style="border:none; outline:none; font-size:14px; width:100%;" />
-            </div>
-        </div>
-        <div style="background:white; border-radius:30px; border:1px solid #ddd; padding:10px 20px; display:flex; align-items:center; gap:10px;">
-            <span style="font-size:24px;">&#128100;</span>
-            <span style="font-weight:600;">@username</span>
-        </div>
-    </div>
-
-    @if (TempData["Success"] != null)
-    {
-        <div style="background:#d4edda; color:#155724; padding:12px; border-radius:8px; margin-bottom:16px;">
-            @TempData["Success"]
-        </div>
+<style>
+    .dash-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+        gap: 16px;
+        flex-wrap: wrap;
     }
 
-    <!-- Cards row -->
-    <div style="display:flex; gap:20px; margin-bottom:24px;">
+    .dash-topbar-left { display: flex; align-items: center; gap: 14px; }
 
-        <!-- Latest delivery card -->
-        @if (Model.Any())
-        {
-            var latest = Model.First();
-            <div style="flex:1.5; background:#888; color:white; border-radius:16px; padding:24px; position:relative; overflow:hidden; min-height:180px;">
-                <span style="font-size:120px; position:absolute; right:-20px; bottom:-30px; opacity:0.12;">&#128666;</span>
-                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    <p style="margin:0 0 16px; font-weight:700; font-size:15px;">Delivery ID: #DR@latest.DeliveryID</p>
-                    <span style="background:white; color:#333; border-radius:30px; padding:4px 14px; font-size:13px; font-weight:600;">
-                        @latest.Status
-                    </span>
-                </div>
-                <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <span style="font-size:13px; min-width:60px;">@latest.CreatedDate.ToString("d/M/yy")</span>
-                        <div style="width:10px; height:10px; background:white; border-radius:50%;"></div>
-                        <span style="font-size:13px;">Checking</span>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <span style="font-size:13px; min-width:60px;">@latest.DeliveryDate.ToString("d/M/yy")</span>
-                        <div style="width:10px; height:10px; background:#e05a2b; border-radius:50%;"></div>
-                        <span style="font-size:13px;">@latest.Status</span>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <span style="font-size:13px; min-width:60px;">--</span>
-                        <div style="width:10px; height:10px; background:rgba(255,255,255,0.3); border-radius:50%;"></div>
-                        <span style="font-size:13px; color:rgba(255,255,255,0.5);">--</span>
-                    </div>
-                </div>
-            </div>
-        }
-        else
-        {
-            <div style="flex:1.5; background:#888; color:white; border-radius:16px; padding:24px;">
-                <p style="margin:0 0 12px;">No deliveries yet.</p>
-                <a asp-action="RequestDelivery" style="color:white; font-weight:700;">Request your first delivery →</a>
-            </div>
-        }
+    .date-badge {
+        background: #222;
+        border-radius: 50%;
+        width: 54px;
+        height: 54px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #f24e29;
+        font-weight: 700;
+        font-size: 18px;
+        color: #fff;
+        flex-shrink: 0;
+        line-height: 1;
+    }
 
-        <!-- Donut chart -->
-        <div style="flex:1; background:white; border-radius:16px; padding:24px; text-align:center; border:1px solid #eee;">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px;">
-                <span style="width:10px; height:10px; background:#e05a2b; border-radius:50%; display:inline-block;"></span>
-                <span style="font-weight:700;">Delivery Status</span>
-            </div>
-            @{
-                int total = Model.Count;
-                int delivered = Model.Count(d => d.Status == "Delivered");
-                int pct = total > 0 ? (delivered * 100 / total) : 0;
-                int dash = (int)(pct * 2.51);
-                int gap = 251 - dash;
-            }
-            <svg viewBox="0 0 100 100" width="150" height="150">
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#f0f0f0" stroke-width="10" />
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#e05a2b" stroke-width="10"
-                        stroke-dasharray="@dash @gap" stroke-linecap="round"
-                        transform="rotate(-90 50 50)" />
-                <text x="50" y="47" text-anchor="middle" font-size="14" font-weight="700">@pct%</text>
-                <text x="50" y="60" text-anchor="middle" font-size="7" fill="#999">Within Time Limit</text>
-            </svg>
+    .date-badge span { font-size: 9px; font-weight: 400; color: #888; margin-top: 1px; }
+
+    .search-wrap {
+        background: #222;
+        border-radius: 30px;
+        border: 1.5px solid #333;
+        padding: 10px 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 260px;
+        transition: border-color 0.2s;
+    }
+
+    .search-wrap:focus-within { border-color: #f24e29; }
+
+    .search-wrap input {
+        border: none;
+        outline: none;
+        font-size: 14px;
+        background: transparent;
+        color: #fff;
+        width: 100%;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .search-wrap input::placeholder { color: #666; }
+
+    .user-pill {
+        background: #222;
+        border-radius: 30px;
+        border: 1px solid #333;
+        padding: 8px 18px 8px 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        font-size: 14px;
+        color: #fff;
+    }
+
+    .user-pill-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+    }
+
+    .cards-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .latest-card {
+        flex: 1.5;
+        background: #2a2a2a;
+        color: white;
+        border-radius: 16px;
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+        min-height: 180px;
+        border: 1px solid #333;
+    }
+
+    .latest-card-bg-icon {
+        font-size: 110px;
+        position: absolute;
+        right: -20px;
+        bottom: -30px;
+        opacity: 0.06;
+        pointer-events: none;
+    }
+
+    .latest-card-hdr {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+    }
+
+    .latest-card-id { font-weight: 700; font-size: 15px; color: #fff; }
+
+    .latest-status-badge {
+        background: rgba(255,255,255,0.12);
+        color: #fff;
+        border-radius: 30px;
+        padding: 4px 14px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .latest-card-timeline { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+
+    .timeline-row { display: flex; align-items: center; gap: 12px; }
+
+    .timeline-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .timeline-date { font-size: 12px; min-width: 58px; color: #ccc; }
+    .timeline-label { font-size: 13px; color: #ccc; }
+
+    .donut-card {
+        flex: 1;
+        background: #222;
+        border-radius: 16px;
+        padding: 24px;
+        border: 1px solid #2a2a2a;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .donut-card-hdr {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        align-self: flex-start;
+    }
+
+    .donut-dot { width: 10px; height: 10px; background: #f24e29; border-radius: 50%; }
+    .donut-title { font-weight: 700; font-size: 14px; color: #fff; }
+
+    .table-card {
+        background: #222;
+        border-radius: 16px;
+        padding: 22px;
+        border: 1px solid #2a2a2a;
+    }
+
+    .table-card-hdr {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .table-card-title { font-size: 15px; font-weight: 700; color: #fff; }
+
+    .deliveries-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    .deliveries-table th {
+        text-align: left;
+        padding: 8px 10px;
+        color: #666;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #2a2a2a;
+    }
+
+    .deliveries-table td {
+        padding: 12px 10px;
+        border-bottom: 1px solid #1e1e1e;
+        color: #ccc;
+    }
+
+    .deliveries-table tr:last-child td { border-bottom: none; }
+    .deliveries-table tr:hover td { background: #1f1f1f; }
+
+    .status-txt-pending   { color: #888; font-weight: 600; }
+    .status-txt-intransit { color: #f59e0b; font-weight: 600; }
+    .status-txt-delivered { color: #10b981; font-weight: 600; }
+
+    .alert-success {
+        background: #0d2e1a;
+        color: #10b981;
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        font-size: 14px;
+        border: 1px solid #10b981;
+    }
+
+    /* FIX: btn-primary style defined here so it works in customer layout */
+    .btn-primary {
+        display: inline-block;
+        padding: 12px 24px;
+        background: #f24e29;
+        color: #fff !important;
+        border: none;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-primary:hover { background: #d43e1e; text-decoration: none; }
+</style>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert-success">✓ @TempData["Success"]</div>
+}
+
+<!-- Top bar -->
+<div class="dash-topbar">
+    <div class="dash-topbar-left">
+        <div class="date-badge">
+            @DateTime.Now.Day
+            <span>@DateTime.Now.ToString("MMM")</span>
+        </div>
+        <div class="search-wrap">
+            <span style="color:#666; font-size:16px;">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search deliveries..."
+                   onkeyup="filterTable()" />
         </div>
     </div>
-
-    <!-- Deliveries table -->
-    <div style="background:white; border-radius:16px; padding:24px; border:1px solid #eee;">
-        <table style="width:100%; border-collapse:collapse; font-size:14px;" id="deliveryTable">
-            <thead>
-                <tr style="border-bottom:2px solid #f0f0f0;">
-                    <th style="text-align:left; padding:10px;">Delivery ID</th>
-                    <th style="text-align:left; padding:10px;">Arrival Date</th>
-                    <th style="text-align:left; padding:10px;">Route</th>
-                    <th style="text-align:left; padding:10px;">Weight</th>
-                    <th style="text-align:left; padding:10px;">Delivery Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var d in Model)
-                {
-                    <tr style="border-bottom:1px solid #f5f5f5;">
-                        <td style="padding:12px 10px; font-weight:700;">@d.DeliveryID</td>
-                        <td style="padding:12px 10px;">@d.DeliveryDate.ToString("d/M/yy")</td>
-                        <td style="padding:12px 10px;">@d.PickupAddress – @d.DeliveryAddress</td>
-                        <td style="padding:12px 10px;">@d.Weight</td>
-                        <td style="padding:12px 10px; font-weight:700;">
-                            @{
-                                var statusColor = d.Status switch
-                                {
-                                    "Delivered" => "#155724",
-                                    "In Transit" => "#856404",
-                                    "Pending" => "#666",
-                                    _ => "#333"
-                                };
-                            }
-                            <span style="color:@statusColor;">@d.Status</span>
-                        </td>
-                    </tr>
-                }
-                @if (!Model.Any())
-                {
-                    <tr>
-                        <td colspan="5" style="padding:20px; text-align:center; color:#999;">No deliveries found.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+    <div class="user-pill">
+        <div class="user-pill-avatar">👤</div>
+        <span>@username</span>
     </div>
 </div>
 
+<!-- Quick action -->
+<div style="margin-bottom:20px;">
+    <a asp-controller="Customer" asp-action="RequestDelivery" class="btn-primary">
+        + Request New Delivery
+    </a>
+</div>
+
+<!-- Cards row -->
+<div class="cards-row">
+
+    @if (Model.Any())
+    {
+        var latest = Model.First();
+        <div class="latest-card">
+            <span class="latest-card-bg-icon">🚚</span>
+            <div class="latest-card-hdr">
+                <span class="latest-card-id">Delivery #DR@latest.DeliveryID</span>
+                <span class="latest-status-badge">@latest.Status</span>
+            </div>
+            <div class="latest-card-timeline">
+                <div class="timeline-row">
+                    <span class="timeline-date">@latest.CreatedDate.ToString("d/M/yy")</span>
+                    <div class="timeline-dot" style="background:#fff;"></div>
+                    <span class="timeline-label">Order placed</span>
+                </div>
+                <div class="timeline-row">
+                    <span class="timeline-date">@latest.DeliveryDate.ToString("d/M/yy")</span>
+                    <div class="timeline-dot" style="background:#f24e29;"></div>
+                    <span class="timeline-label">@latest.Status</span>
+                </div>
+                <div class="timeline-row">
+                    <span class="timeline-date" style="color:#555;">—</span>
+                    <div class="timeline-dot" style="background:rgba(255,255,255,0.15);"></div>
+                    <span class="timeline-label" style="color:#555;">Awaiting update</span>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="latest-card">
+            <p style="margin:0 0 12px; color:#aaa;">No deliveries yet.</p>
+            <a asp-action="RequestDelivery" class="btn-primary" style="font-size:14px; padding:10px 20px;">
+                Request your first delivery →
+            </a>
+        </div>
+    }
+
+    <!-- Donut chart -->
+    <div class="donut-card">
+        <div class="donut-card-hdr">
+            <div class="donut-dot"></div>
+            <span class="donut-title">Delivery Status</span>
+        </div>
+        @{
+            int total     = Model.Count;
+            int delivered = Model.Count(d => d.Status == "Delivered");
+            int pct       = total > 0 ? (delivered * 100 / total) : 0;
+            int dash      = (int)(pct * 2.51);
+            int gap       = 251 - dash;
+        }
+        <svg viewBox="0 0 100 100" width="140" height="140">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#2a2a2a" stroke-width="10" />
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#f24e29" stroke-width="10"
+                    stroke-dasharray="@dash @gap" stroke-linecap="round"
+                    transform="rotate(-90 50 50)" />
+            <text x="50" y="47" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">@pct%</text>
+            <text x="50" y="60" text-anchor="middle" font-size="7" fill="#888">On Time</text>
+        </svg>
+        <div style="font-size:12px; color:#888; margin-top:8px; text-align:center;">
+            @delivered of @total delivered
+        </div>
+    </div>
+
+</div>
+
+<!-- Deliveries table -->
+<div class="table-card">
+    <div class="table-card-hdr">
+        <div class="table-card-title">My Deliveries</div>
+        <a asp-controller="Customer" asp-action="DeliveryStatus"
+           style="color:#f24e29; font-size:13px; font-weight:600; text-decoration:none;">
+            View all status →
+        </a>
+    </div>
+    <table class="deliveries-table" id="deliveryTable">
+        <thead>
+            <tr>
+                <th>Delivery ID</th>
+                <th>Arrival Date</th>
+                <th>Route</th>
+                <th>Weight</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var d in Model)
+            {
+                var statusClass = d.Status switch {
+                    "In Transit" => "status-txt-intransit",
+                    "Delivered"  => "status-txt-delivered",
+                    _            => "status-txt-pending"
+                };
+                <tr>
+                    <td style="font-weight:700; color:#fff;">#DR@d.DeliveryID</td>
+                    <td>@d.DeliveryDate.ToString("d/M/yy")</td>
+                    <td>@d.PickupAddress → @d.DeliveryAddress</td>
+                    <td>@d.Weight</td>
+                    <td><span class="@statusClass">@d.Status</span></td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="5" style="padding:24px; text-align:center; color:#555;">
+                        No deliveries yet.
+                        <a asp-action="RequestDelivery" style="color:#f24e29; font-weight:600;">Create one →</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
 <script>
     function filterTable() {
         var input = document.getElementById("searchInput").value.toLowerCase();
-        var rows = document.querySelectorAll("#deliveryTable tbody tr");
-        rows.forEach(function (row) {
+        var rows  = document.querySelectorAll("#deliveryTable tbody tr");
+        rows.forEach(function(row) {
             row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
         });
     }
 </script>
+}

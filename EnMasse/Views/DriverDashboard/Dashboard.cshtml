@@ -1,407 +1,156 @@
-﻿@{
-    ViewData["Title"] = "Driver Dashboard";
+﻿@model List<EnMasse.Models.Delivery>
+@{
     Layout = null;
+    var driverName = Context.Session.GetString("Username") ?? "Jane Doe";
 }
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Driver Dashboard</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <title>Driver Dashboard | En Massé</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        :root { --orange: #f24e29; --sidebar-bg: #1a1a1a; --center-bg: #e5e5e5; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* Sidebar (Left) */
+        .sidebar { width: 240px; background: var(--sidebar-bg); color: white; padding: 30px 20px; display: flex; flex-direction: column; }
+        .sidebar h2 { font-size: 1.2rem; margin-bottom: 40px; }
+        .nav-item { color: #888; text-decoration: none; padding: 12px 10px; display: block; font-size: 14px; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { color: white; }
+        .nav-item.active { border-left: 3px solid var(--orange); background: #222; }
+        .sidebar-footer { margin-top: auto; border-top: 1px solid #333; padding-top: 20px; }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #f3f3f3;
-            display: flex;
-            height: 100vh;
-        }
+        /* Delivery List (Center) */
+        .delivery-pane { width: 420px; background: var(--center-bg); padding: 25px; overflow-y: auto; }
+        .date-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+        .date-circle { width: 45px; height: 45px; border: 1.5px solid #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
 
-        /* SIDEBAR */
+        .delivery-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .delivery-card.in-transit { background: #a39b94; color: white; }
+        .status-badge { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.1); padding: 4px 12px; border-radius: 15px; font-size: 11px; font-weight: 600; }
 
-        .sidebar {
-            width: 240px;
-            background: #1c1c1c;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            padding: 30px 20px;
-        }
+        /* Timeline Styling */
+        .timeline { margin: 20px 0; padding-left: 30px; position: relative; border-left: 2px dashed #ccc; margin-left: 10px; }
+        .delivery-card.in-transit .timeline { border-left-color: white; }
+        .timeline-item { position: relative; margin-bottom: 15px; font-size: 13px; }
+        .timeline-item::before { content: ''; position: absolute; left: -36px; top: 4px; width: 10px; height: 10px; background: currentColor; border-radius: 50%; }
 
-        .logo {
-            font-family: 'Poppins', sans-serif;
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 40px;
-        }
+        /* Info & Map (Right) */
+        .info-pane { flex: 1; background: white; padding: 30px; overflow-y: auto; }
+        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .search-container { background: #f1f1f1; border-radius: 25px; padding: 8px 20px; width: 60%; display: flex; align-items: center; }
+        .search-container input { border: none; background: transparent; outline: none; width: 100%; margin-left: 10px; }
 
-        .menu {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+        .map-container { width: 100%; height: 300px; background: #eee; border-radius: 25px; margin-bottom: 30px; overflow: hidden; }
+        
+        /* Vehicle Tabs */
+        .tabs { display: flex; border-bottom: 1px solid #eee; margin-bottom: 20px; }
+        .tab { padding: 10px 20px; color: #999; cursor: pointer; position: relative; }
+        .tab.active { color: black; font-weight: 600; }
+        .tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--orange); }
 
-            .menu a {
-                text-decoration: none;
-                color: #cfcfcf;
-                font-size: 15px;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                padding: 10px;
-                border-radius: 6px;
-                transition: 0.2s;
-            }
-
-                .menu a:hover {
-                    background: #2a2a2a;
-                    color: #E8571A;
-                }
-
-        .bottom-menu {
-            margin-top: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* MAIN */
-
-        .main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* HEADER */
-
-        .header {
-            height: 70px;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        .search {
-            background: #f1f1f1;
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: none;
-            width: 250px;
-        }
-
-        .profile {
-            font-size: 14px;
-            color: #333;
-        }
-
-        /* DASHBOARD */
-
-        .dashboard {
-            padding: 30px;
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 25px;
-        }
-
-        /* DELIVERY CARD */
-
-        .delivery-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        .delivery-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .status {
-            background: #e6e6e6;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-
-            .status.intransit {
-                background: #ffe2d8;
-                color: #E8571A;
-            }
-
-            .status.delivered {
-                background: #e2f6e7;
-                color: #2f9e44;
-            }
-
-        /* RIGHT PANEL */
-
-        .right-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        /* MAP */
-
-        .map-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #999;
-            font-size: 18px;
-        }
-
-        /* TRUCK INFO PANEL */
-
-        .info-card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-
-        /* TABS */
-
-        .tabs {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-        }
-
-        .tab {
-            font-weight: 500;
-            color: #777;
-            cursor: pointer;
-        }
-
-            .tab.active {
-                color: #000;
-                border-bottom: 3px solid #E8571A;
-                padding-bottom: 8px;
-            }
-
-        /* VEHICLE INFO */
-
-        .vehicle {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-
-        .truck-img {
-            width: 120px;
-            height: auto;
-        }
-
-        .vehicle-details {
-            display: grid;
-            grid-template-columns: repeat(2,150px);
-            gap: 10px 30px;
-        }
-
-            .vehicle-details div {
-                font-size: 14px;
-                color: #555;
-            }
-
-            .vehicle-details strong {
-                display: block;
-                font-size: 15px;
-                color: #000;
-            }
-
-        .rating {
-            font-size: 16px;
-            color: #f59f00;
-        }
-
+        .vehicle-details { display: grid; grid-template-columns: 150px 1fr; gap: 30px; align-items: center; }
+        .load-indicator { background: #e8f0fe; border-radius: 15px; padding: 20px; text-align: center; }
+        .load-indicator .fill { background: #4285f4; color: white; border-radius: 5px; padding: 2px 0; font-size: 10px; width: 71%; margin: 0 auto; }
     </style>
-
 </head>
-
 <body>
 
-    <!-- SIDEBAR -->
-
     <div class="sidebar">
-
-        <div class="logo">Driver Dashboard</div>
-
-        <div class="menu">
-
-            <a href="#">Delivery Status</a>
-            <a href="#">Request Delivery Report</a>
-            <a href="#">Request Delivery Report</a>
-
+        <h2>Driver Dashboard</h2>
+        <a asp-action="Dashboard" class="nav-item active">🚚 Delivery Status</a>
+        <a asp-action="Report" class="nav-item">📊 Delivery Report</a>
+        
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item">❓ Help</a>
+            <a href="#" class="nav-item">⚙ Settings</a>
+            <a asp-action="Logout" class="nav-item" style="color: var(--orange);">↪ Log out</a>
         </div>
-
-        <div class="bottom-menu">
-
-            <a href="#">❓ Help</a>
-            <a href="#">⚙ Settings</a>
-            <a asp-action="Logout" asp-controller="DriverDashboard">↩ Log out</a>
-
-        </div>
-
     </div>
 
-    <!-- MAIN -->
-
-    <div class="main">
-
-        <div class="header">
-
-            <input class="search" placeholder="Search for a delivery">
-
-            <div class="profile">Jane Doe</div>
-
-        </div>
-
-
-        <div class="dashboard">
-
-            <!-- LEFT COLUMN -->
-
-            <div>
-
-                <!-- CARD 1 -->
-                <div class="delivery-card">
-                    <div class="delivery-header">
-                        <strong>Delivery ID: #DR2435</strong>
-                        <span class="status intransit">In Transit</span>
-                    </div>
-                    <p>27/1/26 — Checking</p>
-                    <p>29/1/26 — In Transit</p>
-                </div>
-
-                <!-- CARD 2 -->
-                <div class="delivery-card">
-                    <div class="delivery-header">
-                        <strong>Delivery ID: #DR9835</strong>
-                        <span class="status delivered">Delivered</span>
-                    </div>
-                    <p>27/1/26 — Checking</p>
-                    <p>29/1/26 — In Transit</p>
-                    <p>3/3/26 — Delivered</p>
-                </div>
-
-                <!-- CARD 3 -->
-                <div class="delivery-card">
-                    <div class="delivery-header">
-                        <strong>Delivery ID: #DR6254</strong>
-                        <span class="status intransit">In Transit</span>
-                    </div>
-                    <p>02/2/26 — Checking</p>
-                    <p>03/2/26 — Loading Cargo</p>
-                    <p>04/2/26 — In Transit</p>
-                </div>
-
-                <!-- CARD 4 -->
-                <div class="delivery-card">
-                    <div class="delivery-header">
-                        <strong>Delivery ID: #DR8121</strong>
-                        <span class="status delivered">Delivered</span>
-                    </div>
-                    <p>15/1/26 — Checking</p>
-                    <p>17/1/26 — In Transit</p>
-                    <p>19/1/26 — Delivered</p>
-                </div>
-
+    <div class="content-wrapper" style="display: flex; flex: 1;">
+        <!-- Center Panel -->
+        <div class="delivery-pane">
+            <div class="date-header">
+                <div class="date-circle">@DateTime.Now.Day</div>
+                <div>@DateTime.Now.ToString("ddd")<br>@DateTime.Now.ToString("MMMM")</div>
             </div>
 
-            <!-- RIGHT COLUMN -->
-
-            <div class="right-panel">
-
-                <!-- MAP AREA -->
-
-                <div class="map-card">
-                    Live GPS Tracking Map
-                </div>
-
-                <!-- TRUCK INFO -->
-
-                <div class="info-card">
-
-                    <div class="tabs">
-                        <div class="tab">Driver Information</div>
-                        <div class="tab active">Vehicle</div>
-                        <div class="tab">Customer Information</div>
+            @foreach (var item in Model)
+            {
+                <div class="delivery-card @(item.Status == "In Transit" ? "in-transit" : "")">
+                    <span class="status-badge">@item.Status</span>
+                    <strong>Delivery ID: #DR@item.DeliveryID</strong>
+                    
+                    <div class="timeline">
+                        <div class="timeline-item">@item.CreatedDate.ToShortDateString() — Checking</div>
+                        <div class="timeline-item">@DateTime.Now.ToShortDateString() — @item.Status</div>
+                        <div class="timeline-item" style="opacity: 0.5;">--/--/-- — Pending</div>
                     </div>
 
-                    <div class="vehicle">
-
-                        <img class="truck-img" src="https://d2e5b8shawuel2.cloudfront.net/vehicle/286781/hlv/original.jpg">
-
-                        <div>
-
-                            <strong>Mercedes-Benz</strong>
-
-                            <div class="rating">⭐ 4.9</div>
-
-                            <br>
-
-                            <div class="vehicle-details">
-
-                                <div>
-                                    <strong>Model</strong>
-                                    Actros 1845
-                                </div>
-
-                                <div>
-                                    <strong>Capacity</strong>
-                                    70%
-                                </div>
-
-                                <div>
-                                    <strong>Weight</strong>
-                                    1250kg
-                                </div>
-
-                                <div>
-                                    <strong>Load Volume</strong>
-                                    775 Litres
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
+                    <form asp-action="UpdateStatus" method="post">
+                        <input type="hidden" name="deliveryId" value="@item.DeliveryID" />
+                        <select name="status" onchange="this.form.submit()" style="width:100%; background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.5); border-radius:5px; color:inherit; padding:5px;">
+                            <option value="">Update Status...</option>
+                            <option value="In Transit">In Transit</option>
+                            <option value="Delivered">Delivered</option>
+                        </select>
+                    </form>
                 </div>
-
-            </div>
-
+            }
         </div>
 
+        <!-- Right Panel -->
+        <div class="info-pane">
+            <div class="top-nav">
+                <div class="search-container">
+                    <span>🔍</span><input type="text" placeholder="Search for a delivery">
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <strong>@driverName</strong>
+                    <div style="width:40px; height:40px; background:#ddd; border-radius:50%;"></div>
+                </div>
+            </div>
+
+            <div class="map-container" id="map">
+                <div style="text-align:center; padding-top:120px; color:#999;">Google Maps API Active</div>
+            </div>
+
+            <h3>Main Info</h3>
+            <div class="tabs">
+                <div class="tab">Driver Information</div>
+                <div class="tab active">Vehicle</div>
+                <div class="tab">Customer Information</div>
+            </div>
+
+            <div class="vehicle-details">
+                <div class="load-indicator">
+                    <div class="fill">71%</div>
+                    <p style="font-size:12px; margin-top:10px;">Capacity</p>
+                </div>
+                <div>
+                    <h4 style="margin:0;">Mercedes-Benz Actros 1845</h4>
+                    <p style="color:#666; font-size:14px; margin: 10px 0;">
+                        Weight: 40050kg<br>
+                        Load Volume: 770 Cu Ft<br>
+                        Rating: 4.9 ⭐
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+    <script>
+        function initMap() {
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 10,
+                center: { lat: -26.2041, lng: 28.0473 },
+                styles: [{ "featureType": "all", "elementType": "all", "stylers": [{ "saturation": -100 }] }]
+            });
+        }
+    </script>
 </body>
-
 </html>

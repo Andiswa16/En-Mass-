@@ -4,6 +4,7 @@ using EnMasse.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnMasse.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260501132523_UpdateModels")]
+    partial class UpdateModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,9 +47,6 @@ namespace EnMasse.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("DriverID")
-                        .HasColumnType("int");
-
                     b.Property<string>("PickupAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -67,32 +67,9 @@ namespace EnMasse.Migrations
 
                     b.HasKey("DeliveryID");
 
-                    b.HasIndex("DriverID");
-
                     b.HasIndex("UserID");
 
                     b.ToTable("Deliveries");
-                });
-
-            modelBuilder.Entity("EnMasse.Models.Driver", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("DPassword")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DUsername")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Drivers");
                 });
 
             modelBuilder.Entity("EnMasse.Models.Registration", b =>
@@ -166,17 +143,11 @@ namespace EnMasse.Migrations
 
             modelBuilder.Entity("EnMasse.Models.Delivery", b =>
                 {
-                    b.HasOne("EnMasse.Models.Driver", "Driver")
-                        .WithMany("Deliveries")
-                        .HasForeignKey("DriverID");
-
                     b.HasOne("EnMasse.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Driver");
 
                     b.Navigation("User");
                 });
@@ -188,11 +159,6 @@ namespace EnMasse.Migrations
                         .HasForeignKey("RegistrationID");
 
                     b.Navigation("Registration");
-                });
-
-            modelBuilder.Entity("EnMasse.Models.Driver", b =>
-                {
-                    b.Navigation("Deliveries");
                 });
 #pragma warning restore 612, 618
         }

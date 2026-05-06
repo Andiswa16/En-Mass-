@@ -4,53 +4,156 @@
     Layout = "_Layout";
 }
 
-<div style="padding:20px;">
-    <h2 style="font-weight:700; margin-bottom:24px;">Delivery Status</h2>
+<style>
+    .status-page { padding: 0; }
 
-    <div style="background:white; border-radius:16px; padding:24px; border:1px solid #eee;">
-        <table style="width:100%; border-collapse:collapse; font-size:14px;">
+    .status-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 22px;
+    }
+
+    .status-title { font-size: 22px; font-weight: 700; color: #fff; }
+
+    .status-card {
+        background: #222;
+        border-radius: 16px;
+        padding: 22px;
+        border: 1px solid #2a2a2a;
+    }
+
+    .status-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    .status-table th {
+        text-align: left;
+        padding: 10px 12px;
+        color: #666;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #2a2a2a;
+    }
+
+    .status-table td {
+        padding: 13px 12px;
+        border-bottom: 1px solid #1e1e1e;
+        color: #ccc;
+        vertical-align: middle;
+    }
+
+    .status-table tr:last-child td { border-bottom: none; }
+    .status-table tr:hover td { background: #1f1f1f; }
+
+    .status-pill {
+        display: inline-block;
+        padding: 4px 14px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 12px;
+    }
+
+    .pill-pending   { background: #2a2a2a; color: #aaa; }
+    .pill-intransit { background: #332200; color: #f59e0b; }
+    .pill-delivered { background: #0d2e1a; color: #10b981; }
+
+    .empty-state { text-align: center; padding: 40px; color: #555; }
+
+    .progress-steps {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+    }
+
+    .step         { color: #555; }
+    .step.done    { color: #10b981; }
+    .step.current { color: #f24e29; font-weight: 700; }
+    .step-arrow   { color: #444; }
+
+    /* FIX: btn-primary defined locally so button renders correctly */
+    .btn-primary {
+        display: inline-block;
+        padding: 10px 20px;
+        background: #f24e29;
+        color: #fff !important;
+        border: none;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-primary:hover { background: #d43e1e; text-decoration: none; }
+</style>
+
+<div class="status-page">
+
+    <div class="status-header">
+        <div class="status-title">Delivery Status</div>
+        <a asp-controller="Customer" asp-action="RequestDelivery" class="btn-primary">
+            + New Delivery
+        </a>
+    </div>
+
+    <div class="status-card">
+        <table class="status-table">
             <thead>
-                <tr style="border-bottom:2px solid #f0f0f0;">
-                    <th style="text-align:left; padding:10px;">Delivery ID</th>
-                    <th style="text-align:left; padding:10px;">Route</th>
-                    <th style="text-align:left; padding:10px;">Weight</th>
-                    <th style="text-align:left; padding:10px;">Delivery Date</th>
-                    <th style="text-align:left; padding:10px;">Status</th>
+                <tr>
+                    <th>Delivery ID</th>
+                    <th>Route</th>
+                    <th>Weight</th>
+                    <th>Delivery Date</th>
+                    <th>Progress</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var d in Model)
                 {
-                    var statusColor = d.Status switch
-                    {
-                        "Delivered" => "#155724",
-                        "In Transit" => "#856404",
-                        "Pending" => "#666",
-                        _ => "#333"
+                    var pillClass = d.Status switch {
+                        "In Transit" => "pill-intransit",
+                        "Delivered"  => "pill-delivered",
+                        _            => "pill-pending"
                     };
-                    var bgColor = d.Status switch
-                    {
-                        "Delivered" => "#d4edda",
-                        "In Transit" => "#fff3cd",
-                        "Pending" => "#f8f9fa",
-                        _ => "white"
-                    };
-                    <tr style="border-bottom:1px solid #f5f5f5;">
-                        <td style="padding:12px 10px; font-weight:700;">#DR@d.DeliveryID</td>
-                        <td style="padding:12px 10px;">@d.PickupAddress – @d.DeliveryAddress</td>
-                        <td style="padding:12px 10px;">@d.Weight</td>
-                        <td style="padding:12px 10px;">@d.DeliveryDate.ToString("d/M/yy")</td>
-                        <td style="padding:12px 10px;">
-                            <span style="background:@bgColor; color:@statusColor; padding:4px 12px; border-radius:30px; font-weight:600; font-size:13px;">
-                                @d.Status
-                            </span>
+
+                    var stepPending   = d.Status == "Pending"    ? "current" : "done";
+                    var stepTransit   = d.Status == "In Transit"  ? "current" : (d.Status == "Delivered" ? "done" : "");
+                    var stepDelivered = d.Status == "Delivered"   ? "done current" : "";
+
+                    <tr>
+                        <td style="font-weight:700; color:#fff; font-family:monospace;">#DR@d.DeliveryID</td>
+                        <td style="font-size:12px;">@d.PickupAddress → @d.DeliveryAddress</td>
+                        <td>@d.Weight</td>
+                        <td style="color:#888; font-size:12px;">@d.DeliveryDate.ToString("d MMM yyyy")</td>
+                        <td>
+                            <div class="progress-steps">
+                                <span class="step @stepPending">Placed</span>
+                                <span class="step-arrow">›</span>
+                                <span class="step @stepTransit">In Transit</span>
+                                <span class="step-arrow">›</span>
+                                <span class="step @stepDelivered">Delivered</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="status-pill @pillClass">@d.Status</span>
                         </td>
                     </tr>
                 }
                 @if (!Model.Any())
                 {
                     <tr>
-                        <td colspan="5" style="padding:20px; text-align:center; color:#999;">No deliveries found.</td>
+                        <td colspan="6" class="empty-state">
+                            No deliveries found.
+                            <a asp-action="RequestDelivery" style="color:#f24e29; font-weight:600;">Request one →</a>
+                        </td>
                     </tr>
                 }
             </tbody>

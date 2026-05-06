@@ -40,7 +40,8 @@
                 Your username will be: <strong id="usernamePreview">Your company name</strong>
             </p>
 
-            <input asp-for="VATNumber" placeholder="VAT Number (10 digits)" maxlength="10"
+            @* FIX: value="" ensures VAT field is always empty on load, never pre-filled *@
+            <input asp-for="VATNumber" value="" placeholder="VAT Number (10 digits)" maxlength="10"
                    style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:4px; box-sizing:border-box; outline:none;" />
             <span asp-validation-for="VATNumber" style="color:red; font-size:12px; display:block; margin-bottom:8px;"></span>
 
@@ -50,7 +51,8 @@
             <input asp-for="ContactName" placeholder="Name of CEO / Director / Relevant Person"
                    style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:12px; box-sizing:border-box; outline:none;" />
 
-            <input asp-for="ContactPhone" placeholder="Phone Number (10 digits)" maxlength="10"
+            @* FIX: value="" ensures phone field is also always empty *@
+            <input asp-for="ContactPhone" value="" placeholder="Phone Number (10 digits)" maxlength="10"
                    style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:4px; box-sizing:border-box; outline:none;" />
             <span asp-validation-for="ContactPhone" style="color:red; font-size:12px; display:block; margin-bottom:8px;"></span>
 

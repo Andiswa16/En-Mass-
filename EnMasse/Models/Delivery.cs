@@ -8,19 +8,19 @@ namespace EnMasse.Models
         [Key]
         public int DeliveryID { get; set; }
 
-        [Required(ErrorMessage = "Pickup address is required.")]
+        [Required]
         public string PickupAddress { get; set; }
 
-        [Required(ErrorMessage = "Delivery address is required.")]
+        [Required]
         public string DeliveryAddress { get; set; }
 
-        [Required(ErrorMessage = "Description of goods is required.")]
+        [Required]
         public string DescriptionOfGoods { get; set; }
 
-        [Required(ErrorMessage = "Weight is required.")]
+        [Required]
         public string Weight { get; set; }
 
-        [Required(ErrorMessage = "Delivery date is required.")]
+        [Required]
         public DateTime DeliveryDate { get; set; }
 
         public string? SpecialInstructions { get; set; }
@@ -29,9 +29,16 @@ namespace EnMasse.Models
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
+        // ✅ CUSTOMER
         public int UserID { get; set; }
 
         [ForeignKey("UserID")]
         public virtual User? User { get; set; }
+
+        // ✅ DRIVER (🔥 THIS FIXES YOUR ERROR)
+        public int? DriverID { get; set; }
+
+        [ForeignKey("DriverID")]
+        public virtual Driver? Driver { get; set; }
     }
 }

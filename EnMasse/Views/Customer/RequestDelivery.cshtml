@@ -4,54 +4,191 @@
     Layout = "_Layout";
 }
 
-<div style="display:flex; justify-content:center; align-items:center; min-height:80vh;">
-    <div style="background:white; padding:40px 50px; border-radius:12px; width:100%; max-width:520px; text-align:center;">
+<style>
+    .request-wrap {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 80vh;
+        padding: 20px 0;
+    }
 
-        <h1 style="font-size:26px; font-weight:900; margin-bottom:8px;">
-            EN MASSE'<span style="color:#e05a2b;">LOGISTICS</span>
-        </h1>
-        <h2 style="font-size:16px; font-weight:700; margin-bottom:20px;">Delivery Information</h2>
+    .request-card {
+        background: #1e1e1e;
+        padding: 40px 48px;
+        border-radius: 16px;
+        width: 100%;
+        max-width: 540px;
+        border: 1px solid #2a2a2a;
+    }
+
+    .request-logo-title {
+        font-size: 22px;
+        font-weight: 900;
+        margin-bottom: 6px;
+        color: #fff;
+        text-align: center;
+    }
+
+    .request-logo-title span { color: #f24e29; }
+
+    .request-subtitle {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 24px;
+        text-align: center;
+        color: #ccc;
+    }
+
+    .field-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+        margin-left: 4px;
+    }
+
+    .field-wrap { margin-bottom: 16px; }
+
+    .form-input-dark {
+        width: 100%;
+        background: #111;
+        border: 1.5px solid #333;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 14px;
+        color: #fff;
+        outline: none;
+        transition: border-color 0.2s;
+        font-family: 'Segoe UI', sans-serif;
+        box-sizing: border-box;
+    }
+
+    .form-input-dark::placeholder { color: #555; }
+    .form-input-dark:focus { border-color: #f24e29; }
+
+    /* FIX: date input calendar icon visible on dark bg */
+    .form-input-dark[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        cursor: pointer;
+    }
+
+    .btn-row {
+        display: flex;
+        gap: 14px;
+        margin-top: 10px;
+    }
+
+    /* FIX: btn-primary and btn-secondary defined locally */
+    .btn-primary {
+        flex: 1;
+        padding: 14px;
+        border-radius: 10px;
+        border: none;
+        background: #f24e29;
+        color: white;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+
+    .btn-primary:hover { background: #d43e1e; }
+
+    .btn-secondary {
+        flex: 1;
+        padding: 14px;
+        border-radius: 10px;
+        border: 1px solid #555;
+        background: transparent;
+        color: #aaa;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .btn-secondary:hover { background: #1a1a1a; color: #fff; border-color: #888; }
+
+    .error-box {
+        background: #2e0d0d;
+        color: #f87171;
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        border: 1px solid #f87171;
+    }
+
+    .error-box p { margin: 2px 0; }
+</style>
+
+<div class="request-wrap">
+    <div class="request-card">
+
+        <div class="request-logo-title">EN MASSÉ <span>LOGISTICS</span></div>
+        <div class="request-subtitle">New Delivery Request</div>
 
         @if (!ViewData.ModelState.IsValid)
         {
-            <div style="background:#f8d7da; color:#721c24; padding:12px; border-radius:8px; margin-bottom:16px; font-size:13px;">
+            <div class="error-box">
                 @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
                 {
-                    <p style="margin:2px 0;">@error.ErrorMessage</p>
+                    <p>• @error.ErrorMessage</p>
                 }
             </div>
         }
 
         <form method="post" asp-action="RequestDelivery" asp-controller="Customer">
 
-            <input asp-for="PickupAddress" placeholder="Pickup Address"
-                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:12px; box-sizing:border-box; outline:none;" />
+            <div class="field-wrap">
+                <div class="field-label">Pickup Address</div>
+                <input asp-for="PickupAddress" class="form-input-dark" placeholder="e.g. 123 Main St, Johannesburg" />
+            </div>
 
-            <input asp-for="DeliveryAddress" placeholder="Delivery Address"
-                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:12px; box-sizing:border-box; outline:none;" />
+            <div class="field-wrap">
+                <div class="field-label">Delivery Address</div>
+                <input asp-for="DeliveryAddress" class="form-input-dark" placeholder="e.g. 45 Long St, Cape Town" />
+            </div>
 
-            <input asp-for="DescriptionOfGoods" placeholder="Description of Goods"
-                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:12px; box-sizing:border-box; outline:none;" />
+            <div class="field-wrap">
+                <div class="field-label">Description of Goods</div>
+                <input asp-for="DescriptionOfGoods" class="form-input-dark" placeholder="e.g. Electronics, Furniture, etc." />
+            </div>
 
-            <input asp-for="Weight" placeholder="Weight (e.g. 500kg)"
-                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:12px; box-sizing:border-box; outline:none;" />
+            <div class="field-wrap">
+<a href="c:\users\lab_services_student\source\repos\enmasse\enmasse\views\customer\requestdelivery.cshtml">c:\users\lab_services_student\source\repos\enmasse\enmasse\views\customer\requestdelivery.cshtml</a>
+                <div class="field-label">Weight</div>
+                <input asp-for="Weight" class="form-input-dark" placeholder="e.g. 500kg" />
+            </div>
 
-            <input asp-for="DeliveryDate" type="date"
-                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:12px; box-sizing:border-box; outline:none;" />
+            <div class="field-wrap">
+                <div class="field-label">Required Delivery Date</div>
+                <input asp-for="DeliveryDate" type="date" class="form-input-dark"
+                       min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            </div>
 
-            <input asp-for="SpecialInstructions" placeholder="Special Instructions (optional)"
-                   style="width:100%; padding:12px 20px; border-radius:30px; border:1px solid #ccc; font-size:14px; margin-bottom:20px; box-sizing:border-box; outline:none;" />
+            <div class="field-wrap">
+                <div class="field-label">Special Instructions (optional)</div>
+                <input asp-for="SpecialInstructions" class="form-input-dark"
+                       placeholder="e.g. Fragile, keep upright, refrigerated, etc." />
+            </div>
 
-            <div style="display:flex; gap:16px;">
-                <a asp-action="Index" asp-controller="Customer"
-                       style="flex:1; padding:14px; border-radius:30px; border:1px solid #333; background:white; font-size:15px; font-weight:600; text-align:center; text-decoration:none; color:#333;">
+            <div class="btn-row">
+                <a asp-action="Index" asp-controller="Customer" class="btn-secondary">
                     Cancel
                 </a>
-                <button type="submit"
-                        style="flex:1; padding:14px; border-radius:30px; border:none; background:#e05a2b; color:white; font-size:15px; font-weight:700; cursor:pointer;">
-                    Submit
+                <button type="submit" class="btn-primary">
+                    Submit Request
                 </button>
             </div>
+
         </form>
     </div>
 </div>

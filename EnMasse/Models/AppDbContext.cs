@@ -12,5 +12,8 @@ namespace EnMasse.Models
         public DbSet<User> Users { get; set; }
         public DbSet<Registration> Registrations { get; set; }
         public DbSet<Delivery> Deliveries { get; set; }
+
+        // ✅ ADD THIS
+        public DbSet<Driver> Drivers { get; set; }
     }
 }

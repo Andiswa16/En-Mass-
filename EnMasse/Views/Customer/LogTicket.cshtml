@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Log Ticket";
+    Layout = "_Layout";
+}
+
+<h2>Log a Ticket</h2>
+
+<form method="post" asp-action="LogTicket" asp-controller="Customer">
+
+    <label>Category</label>
+    <select name="Category" required>
+        <option>Delivery Issue</option>
+        <option>Damaged Goods</option>
+        <option>Late Delivery</option>
+        <option>Billing</option>
+        <option>Other</option>
+    </select>
+
+    <br />
+
+    <label>Subject</label>
+    <input type="text" name="Subject" required />
+
+    <br />
+
+    <label>Priority</label>
+    <select name="Priority">
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+    </select>
+
+    <br />
+
+    <label>Description</label>
+    <textarea name="Description" required></textarea>
+
+    <br />
+
+    <button type="submit">Submit Ticket</button>
+</form>
+
+@if (TempData["TicketSuccess"] != null)
+{
+    <p style="color:green;">Ticket submitted successfully!</p>
+}

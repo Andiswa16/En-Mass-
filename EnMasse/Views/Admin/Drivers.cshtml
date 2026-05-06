@@ -1,0 +1,16 @@
+﻿@model List<string>
+Layout = "_AdminLayout";
+<div class="page-container">
+
+    <h2>Drivers</h2>
+
+
+    <ul class="list-style">
+        @foreach (var d in Model)
+        {
+            <li>@d</li>
+        }
+    </ul>
+
+
+</div>
